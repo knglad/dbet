@@ -11,8 +11,10 @@ package engine;
 
 public class Drive {
 	
+	
+	// This is just a way for us to work with the drive and not keep the resource tied up so it can be unmounted etc. 
 	public Drive(String name, String mount_point, double total_capac, double free_capac, double used_capac, String fs){
-		// Might need to add an object that references that drive, then call the methods to set each one or calculate it
+		// Might need to add an object that references the object that ties to the actual drive itself, then call the methods to set each one or calculate it
 		//	 so that its in human readable GB.  
 		
 	}
