@@ -64,7 +64,7 @@ public class Drive {
 	public boolean setCapacity(String type, double amt){
 		/**
 		 * @arg type
-		 * 		pass in 'total', 'free', or 'used' otherwise will return 0.0	
+		 * 		pass in 'total', 'free', or 'used' otherwise will return false	
 		 * 
 		 * @arg amt
 		 * 		the amount of GB ( rounded to two decimal places ) that the drive contains in that area.
