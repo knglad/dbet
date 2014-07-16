@@ -58,9 +58,19 @@ public class PrimaryEngine {
 	 */
 	public boolean makeDriveList(String[] mountPoint){
 		
-		for (String s : mountPoint){// Advanced for loop, for each file I'm calling f WITHIN fileArray, do the following.
+		for (String s : mountPoint){// Advanced for loop, for each String I'm calling s WITHIN mountPoint array, do the following.
 			
 			File f = new File(s); // Make a file out of the string mount point
+			
+			String name = f.getName(); // Name
+			String path = f.getAbsolutePath();
+			double capac = f.getTotalSpace();
+			double free = f.getFreeSpace();
+			double used = capac - free;
+			String fileSystem = "";
+			
+			
+			
 			rawDrives.add(f); // add this newly created file to the list, the next available position.
 		}
 		
@@ -70,6 +80,9 @@ public class PrimaryEngine {
 			return true; // there's something in it, that's all this cares about. 
 	}
 	
+	
+	
+	//////// GETTERS AND SETTERS //////////////////////////////
 	
 	public String getOS(){
 		return OS;

@@ -27,6 +27,10 @@ public class engineTest {
 		
 		// Check to ensure they have specific free space remaining
 		assertTrue(   pe.getDriveList().get(0).getFreeSpace() != pe.getDriveList().get(1).getFreeSpace()   );
+		
+		
+		// getName is the last folder in the absolute path so in '/Volumes/Storage' it would be storage
+		assertEquals("Storage", pe.getDriveList().get(0).getName());
 
 	}
 }
