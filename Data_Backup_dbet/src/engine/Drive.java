@@ -79,7 +79,7 @@ public class Drive {
 			else if (type.equals("free") )
 			{	 freeCapacity = amt; return true; }
 			
-			else if (type.equals("used"))
+			else if (type.equals("used") )
 			{	 usedCapacity = amt; return true; }
 			
 			else
