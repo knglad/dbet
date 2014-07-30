@@ -31,7 +31,7 @@ public class PrimaryEngine {
 			// NOTE: macVolumes must be the absolute path to EACH PARTITIONS ROOT!! Breaks otherwise and doesn't know what to do.
 	private String[] macVolumes = { "/Volumes/Storage/", "/Volumes/Storage2/", "/Volumes/Storage3/"};
 	private String[] windowsVolumes = {"D:/"}; // EDIT THIS WHEN WE KNOW WHAT LETTER IS ATTACHED TO THE WINDOWS BACKUP DRIVES!!
-	
+	private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp"};
 	
 	
 	
