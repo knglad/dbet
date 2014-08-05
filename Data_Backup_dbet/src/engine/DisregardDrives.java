@@ -18,8 +18,6 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
 
 
     public DisregardDrives() {
-
-
     }
 
     public boolean arrayToArrayList(String[] listOfKeywords) {
