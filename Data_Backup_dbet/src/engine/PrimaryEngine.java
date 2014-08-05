@@ -1,5 +1,7 @@
 package engine;
 
+import javax.naming.Context;
+import javax.naming.NamingException;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -20,9 +22,10 @@ public class PrimaryEngine {
 
 
 	public String OS; // The Operating System type we are working with
-	private ArrayList<Drive> rawDrives = new ArrayList<Drive>(); // Arraylists make themselves bigger if need be, automatically. 
-	private boolean listMadeSuccessfully = false;
-	
+    private ArrayList<Drive> rawDrives = new ArrayList<Drive>(); // Arraylists make themselves bigger if need be, automatically.
+    private boolean listMadeSuccessfully = false;
+    public DisregardDrives disregard = new DisregardDrives();
+
 	/**
 	 * MANUAL HARD CODED DRIVE STRINGS ARE HERE! EDIT IF MOUNT POINTS OR NAMES CHANGE!!!!!!!!
 	 */
@@ -30,17 +33,15 @@ public class PrimaryEngine {
 	
 			// NOTE: macVolumes must be the absolute path to EACH PARTITIONS ROOT!! Breaks otherwise and doesn't know what to do.
 	private String[] macVolumes = { "/Volumes/Storage/", "/Volumes/Storage2/", "/Volumes/Storage3/"};
-	private String[] windowsVolumes = {"D:/"}; // EDIT THIS WHEN WE KNOW WHAT LETTER IS ATTACHED TO THE WINDOWS BACKUP DRIVES!!
-	private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp"};
-	
-	
-	
-	
-	public PrimaryEngine(){
+    private String[] windowsVolumes = {"F:/CustBackup/"};
+    private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp"};
+
+
+    public PrimaryEngine(){
 		// Determine which OS we are working with
 	 OS = System.getProperty("os.name");
-	 
-	 if ( OS.equals("Mac OS X") ){
+
+        if ( OS.equals("Mac OS X") ){
 		 
 		listMadeSuccessfully =  makeDriveList(macVolumes);
 	}
@@ -49,13 +50,14 @@ public class PrimaryEngine {
 		 listMadeSuccessfully = makeDriveList(windowsVolumes);
 		 
 	 }
-	 
-}	
+
+
+    }
 	
 	/**
-	 * 
-	 * @param String[]
-	 * 		Array of strings that is the exact mount point for the root of the device
+	 *
+     * @param mountPoint
+     * 		Array of strings that is the exact mount point for the root of the device
 	 * @return
 	 * 		false if an empty list or true if the list was made successfully
 	 */
@@ -82,10 +84,25 @@ public class PrimaryEngine {
 		else 
 			return true; // there's something in it, that's all this cares about. 
 	}
-	
-	
-	
-	//////// GETTERS AND SETTERS //////////////////////////////
+
+    public void loadDisregardList() {
+        Context ctx = null;
+        File findIt = new File("savedDisregardList");
+
+        if (findIt == null) {
+            try {
+                ctx.bind("savedDisregardList", disregard);
+            } catch (NamingException e) {
+                e.printStackTrace();
+            }
+        } else {
+
+        }
+
+
+    }
+
+    //////// GETTERS AND SETTERS //////////////////////////////
 	
 	public String getOS(){
 		return OS;
