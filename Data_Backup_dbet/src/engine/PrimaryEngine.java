@@ -1,7 +1,5 @@
 package engine;
 
-import javax.naming.Context;
-import javax.naming.NamingException;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -22,11 +20,10 @@ public class PrimaryEngine {
 
 
 	public String OS; // The Operating System type we are working with
+    public DisregardDrives disregard = new DisregardDrives();
     private ArrayList<Drive> rawDrives = new ArrayList<Drive>(); // Arraylists make themselves bigger if need be, automatically.
     private boolean listMadeSuccessfully = false;
-    public DisregardDrives disregard = new DisregardDrives();
-
-	/**
+    /**
 	 * MANUAL HARD CODED DRIVE STRINGS ARE HERE! EDIT IF MOUNT POINTS OR NAMES CHANGE!!!!!!!!
 	 */
 	// I couldn't find a dynamic way to get ALL the drives 
@@ -85,22 +82,6 @@ public class PrimaryEngine {
 			return true; // there's something in it, that's all this cares about. 
 	}
 
-    public void loadDisregardList() {
-        Context ctx = null;
-        File findIt = new File("savedDisregardList");
-
-        if (findIt == null) {
-            try {
-                ctx.bind("savedDisregardList", disregard);
-            } catch (NamingException e) {
-                e.printStackTrace();
-            }
-        } else {
-
-        }
-
-
-    }
 
     //////// GETTERS AND SETTERS //////////////////////////////
 	
