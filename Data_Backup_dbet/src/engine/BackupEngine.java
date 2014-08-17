@@ -15,9 +15,10 @@ public class BackupEngine {
     public DisregardDrives dd;
     public ArrayList<Drive> drivesToBackup;
 
-    public BackupEngine(String givenOperatingSystem) {
+    public BackupEngine(PrimaryEngine pe) {
 
-        OS = givenOperatingSystem;
+        OS = pe.getOS();
+        dd = pe.getDisregardDriveObject();
 
         // Load in the list of drives to ignore
         dd = dd.loadList(); // Primary engine adds the list prior to this
@@ -52,8 +53,11 @@ public class BackupEngine {
         else if (OS.contains("Windows"))
             f = new File("Computer");
 
+
+        // Make a TOTAL list of ALL drives on the computer
         currentDrives = new ArrayList<File>(Arrays.asList(f.listFiles()));
 
+        // Remove the ones we KNOW we don't
         for (File file : currentDrives) {
             if (dd.contains(file.getName())) {
                 currentDrives.remove(file);
@@ -63,5 +67,10 @@ public class BackupEngine {
         return currentDrives;
     }
 
+    /**
+     * Grabs the string that represents the drive name and backs it up.
+     */
+    public void backupData(){
 
+    }
 } // END OF BACKUP ENGINE

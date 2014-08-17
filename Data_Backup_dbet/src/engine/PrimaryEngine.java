@@ -9,11 +9,7 @@ import java.util.ArrayList;
  *
  *	This class is used to determine what subclasses are needed to be ran.
  * Things like determining which OS we are using and if we want a FRONT or BACK
- * room MODE. 
- * 
- * TODO 
- * 	Find Java mount point for windows systems for 'File windows' in primary engine constructor
- * 	Make list of key words to ignore certain drives or images of things that aren't backup drives ( LM PNP for example ). 
+ * room MODE.
  */
 
 public class PrimaryEngine {
@@ -96,6 +92,8 @@ public class PrimaryEngine {
 	public ArrayList<Drive> getDriveList(){
 		return rawDrives;
 	}
+
+    public DisregardDrives getDisregardDriveObject() { return disregard; }
 	
 	
 	
