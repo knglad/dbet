@@ -21,7 +21,7 @@ public class BackupEngine {
         dd = new DisregardDrives();
 
         // Load in the list of drives to ignore
-        dd.loadList(); // Primary engine adds the list prior to this
+        dd.loadList();
 
         // -----------------------------------------------
         // Find the drives to backup

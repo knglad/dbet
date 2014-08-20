@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 /**
  * Created by CSC on 7/30/2014.
- * <p/>
+ *
  * This class uses the Singleton design principal, and allows us to store a list of
  * strings that are names of drives we want dbet to disregard or DONT backup. This
  * allows us to have users add or modify the list easily.
@@ -29,7 +29,7 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
 
     /**
      * @return true if successfully saved, false if not
-     * <p/>
+     *
      * When this method is called a file will be saved to the engine folder
      * this file will contain the byte stream of this array list
      * @author Kevin Gladhart
