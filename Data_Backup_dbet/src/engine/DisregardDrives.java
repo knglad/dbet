@@ -13,9 +13,10 @@ import java.util.ArrayList;
 public class DisregardDrives extends ArrayList<String> implements Serializable {
 
     public String fileName = "disregardList"; // The file to be read and loaded
+    private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp"}; // To be used as a starting point
+    public DisregardDrives dd;
 
-    public DisregardDrives() {
-    }
+    public DisregardDrives() {}
 
     public boolean addWithoutDuplicates(String keyword) {
         if (this.contains(keyword)) {
@@ -55,28 +56,33 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
 
     /**
      * @return returns the object that is read from the file so it can be used by primary engine.
-     * <p/>
+     *
      * Return the disregardDrives object from the serialized file, then return the object
-     * so it can be saved into the program
+     * so it can be saved into the program. Will create a default list from the array disregard
+     * keywords if nothing is found.
      * @author Kevin Gladhart
      */
-    public DisregardDrives loadList() {
+    public void loadList() {
 
         try {
             FileInputStream fis = new FileInputStream(fileName);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            DisregardDrives dd;
             dd = (DisregardDrives) ois.readObject();
+            this.addAll(dd); // Takes the contents of dd and adds it to this single object.
             ois.close();
             fis.close();
-            return dd;
+
+        } catch (FileNotFoundException fnfe){
+            // Can't find the file? Make a default!
+             this.createDefaultList();
+
         } catch (IOException ioe) {
             ioe.printStackTrace();
-            return null;
+
         } catch (ClassNotFoundException c) {
             System.out.println("Class not found");
             c.printStackTrace();
-            return null;
+
         }
 
     }
@@ -90,6 +96,19 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
         fileName = newFileName;
     }
 
+    /**
+     * @return A disregardDrives object that is the default object with no customizations.
+     *
+     * Should loadList() fail to find a file (it was deleted or otherwise moved out of scope),
+     * this method uses a default hard coded array to create a new one.
+     */
+    public void createDefaultList(){
+
+        for(String s : disregardKeywords){
+            this.addWithoutDuplicates(s);
+        }
+
+    }
 
 } // END OF DISREGARD LISTS
 

@@ -18,10 +18,10 @@ public class BackupEngine {
     public BackupEngine(PrimaryEngine pe) {
 
         OS = pe.getOS();
-        dd = pe.getDisregardDriveObject();
+        dd = new DisregardDrives();
 
         // Load in the list of drives to ignore
-        dd = dd.loadList(); // Primary engine adds the list prior to this
+        dd.loadList(); // Primary engine adds the list prior to this
 
         // -----------------------------------------------
         // Find the drives to backup

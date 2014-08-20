@@ -24,11 +24,22 @@ public class SerializedClassTests {
     public void loadDisregardDrives() {
         DisregardDrives dd = new DisregardDrives();
         dd.changeFileName("test081514");
-        dd = dd.loadList();
+        assertEquals(0, dd.size());
+        dd.loadList();
 
         assertEquals("This is the first string", dd.get(0));
         assertEquals("Second String time!!!", dd.get(1));
         assertEquals("Third!!!!", dd.get(2));
 
+    }
+
+    @Test
+    public void testDefaultListCreation() {
+        DisregardDrives dd = new DisregardDrives();
+        dd.loadList(); // should fail, and create a default
+        assertEquals(3, dd.size());
+        assertEquals("LM PNP", dd.get(0));
+        assertEquals("WD SmartWare", dd.get(1));
+        assertEquals("gimp", dd.get(2));
     }
 }

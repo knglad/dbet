@@ -16,7 +16,6 @@ public class PrimaryEngine {
 
 
 	public String OS; // The Operating System type we are working with
-    public DisregardDrives disregard = new DisregardDrives();
     private ArrayList<Drive> rawDrives = new ArrayList<Drive>(); // Arraylists make themselves bigger if need be, automatically.
     private boolean listMadeSuccessfully = false;
     /**
@@ -27,7 +26,7 @@ public class PrimaryEngine {
 			// NOTE: macVolumes must be the absolute path to EACH PARTITIONS ROOT!! Breaks otherwise and doesn't know what to do.
 	private String[] macVolumes = { "/Volumes/Storage/", "/Volumes/Storage2/", "/Volumes/Storage3/"};
     private String[] windowsVolumes = {"F:/CustBackup/"};
-    private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp"};
+
 
 
     public PrimaryEngine(){
@@ -92,8 +91,6 @@ public class PrimaryEngine {
 	public ArrayList<Drive> getDriveList(){
 		return rawDrives;
 	}
-
-    public DisregardDrives getDisregardDriveObject() { return disregard; }
 	
 	
 	
