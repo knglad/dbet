@@ -1,7 +1,7 @@
 package gui;
 
-import java.awt.GridBagLayout;
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 public class MainWindow extends JPanel{
 	public int width = 0;
@@ -23,10 +23,6 @@ public class MainWindow extends JPanel{
 		
 		//Set height and width of the panel
 		this.setSize(width, height);
-		
-		
-		
-		
 	}
 
 }
