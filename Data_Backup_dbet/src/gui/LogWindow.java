@@ -35,7 +35,6 @@ class LogWindow extends JPanel {
 
     /**
      * @param str - The string to add to the window
-     *            <p/>
      *            Takes the login window and adds some text without deleting what was there prior,
      *            adds a new line to each argument.
      */

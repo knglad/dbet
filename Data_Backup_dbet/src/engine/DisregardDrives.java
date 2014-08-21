@@ -13,8 +13,8 @@ import java.util.ArrayList;
 public class DisregardDrives extends ArrayList<String> implements Serializable {
 
     public String fileName = "disregardList"; // The file to be read and loaded
-    private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp"}; // To be used as a starting point
     public DisregardDrives dd;
+    private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp"}; // To be used as a starting point
 
     public DisregardDrives() {}
 
@@ -89,7 +89,7 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
 
     /**
      * @param newFileName Change the file that will be saved and loaded for this instance
-     *                    <p/>
+     *
      *                    Used for testing purposes to create a new file and try to load it.
      */
     public void changeFileName(String newFileName) {
