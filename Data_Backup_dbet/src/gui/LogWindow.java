@@ -26,7 +26,9 @@ class LogWindow extends JPanel {
     public int positionY = 0;
 
     // The data for this window
-    String logText = "";
+    public String logText = "";
+    public String errors = ""; // This contains any files that may have failed to transfer
+
 
     public LogWindow() {
 
@@ -42,7 +44,7 @@ class LogWindow extends JPanel {
         logText += "\n" + str;
     }
 
-    public void clearText() {
+    protected void clearText() {
         logText = "";
     }
 
@@ -51,7 +53,7 @@ class LogWindow extends JPanel {
         String fileName = "Backup ";
 
         // Format for the date string
-        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss"); // TODO : Test this format works
 
         // The actual date object
         Date date = new Date();

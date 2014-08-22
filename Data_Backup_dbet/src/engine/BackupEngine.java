@@ -1,5 +1,6 @@
 package engine;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,15 +8,24 @@ import java.util.Arrays;
 /**
  * @author Kevin Gladhart
  *
- *         This engine determines the logic on how to backup the given drive in the most effective way
+ * This is the class that handles all the data backup logic. Figures out which drives need to be
+ * backed up, asks the user which drives they want us to backup and allows certain drives to not be backed up.
+ *
+ *
  */
 public class BackupEngine {
 
     public String OS;
     public DisregardDrives dd;
-    public ArrayList<Drive> drivesToBackup;
+    public PrimaryEngine primaryEngine;
+    public JFrame parentWindow;
 
-    public BackupEngine(PrimaryEngine pe) {
+    /**
+     * @param pe           - Allows data transfer with the central object, and access to useful methods
+     * @param parentWindow - Allows sending of signals to the window and its graphical components
+     */
+
+    public BackupEngine(PrimaryEngine pe, JFrame window) {
 
         OS = pe.getOS();
         dd = new DisregardDrives();
@@ -67,10 +77,38 @@ public class BackupEngine {
         return currentDrives;
     }
 
+
+    /**
+     *
+     * @param listToAsk - List of all drives minus the ones that we know we don't want to backup, handled by
+     *               findDrivesToBackup
+     * @return - An ArrayList<Drive> that gets created using primary engine's method to create the drive list
+     *               this is to make it seem cleaner and easier as expansion happens.
+     */
+    public ArrayList<Drive> askWhichDrivesToBackup(ArrayList<File> listToAsk) {
+
+        Object[] options = {"Yes, please",
+                "No, thanks",
+                "No eggs, no ham!"};
+        int n = JOptionPane.showOptionDialog(parentWindow,
+                "Would you like some green eggs to go "
+                        + "with that ham?",
+                "A Silly Question",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[2]);
+
+    }
+
+
     /**
      * Grabs the string that represents the drive name and backs it up.
+     *
+     * @param backupThisList - List of 1 or more Drive objects that are to be backed up.
      */
-    public void backupData(){
+    public void backupData(ArrayList<Drive> backupThisList){
 
     }
 } // END OF BACKUP ENGINE

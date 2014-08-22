@@ -3,13 +3,13 @@ package gui;
 import javax.swing.*;
 import java.awt.*;
 
-public class MainWindow extends JPanel{
-	public int width = 0;
-	public int height = 0;
-	
-	
-	
-	public MainWindow(int x, int y){
+public class MainWindow extends JFrame {
+    public int width = 750;
+    public int height = 900;
+
+    public boolean showMe = true;
+
+    public MainWindow(int x, int y){
 		width = x;
 		height = y;
 		creation();
@@ -23,6 +23,8 @@ public class MainWindow extends JPanel{
 		
 		//Set height and width of the panel
 		this.setSize(width, height);
-	}
+        this.setVisible(showMe);
+        this.setBackground(Color.black);
+    }
 
 }
