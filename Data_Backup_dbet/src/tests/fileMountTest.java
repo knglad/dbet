@@ -9,6 +9,8 @@ import java.io.File;
  */
 public class fileMountTest {
 
+
+    // Used to test to make sure that listFiles() was working, how it worked and to see what getPath returns.
     @Test
     public void testMacMountPointsTotal() {
         File f = new File("/Volumes/");
@@ -16,7 +18,5 @@ public class fileMountTest {
 
         for (File file : mountPoints)
             System.out.println(file.getPath());
-
-
     }
 }

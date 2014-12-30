@@ -21,13 +21,19 @@ public class BackupEngine {
     public JFrame parentWindow;
 
     /**
-     * @param pe           - Allows data transfer with the central object, and access to useful methods
-     * @param parentWindow - Allows sending of signals to the window and its graphical components
+     * @param pe     - Allows data transfer with the central object, and access to useful methods
+     * @param window - Allows sending of signals to the window and its graphical components
      */
 
     public BackupEngine(PrimaryEngine pe, JFrame window) {
 
-        OS = pe.getOS();
+        primaryEngine = pe;
+        parentWindow = window;
+
+        // OS determines where to look for newly mounted drives we may want to backup
+        OS = primaryEngine.getOS();
+
+        // Drives we KNOW we don't want to backup, as users use the program it will learn what it shouldn't look for.
         dd = new DisregardDrives();
 
         // Load in the list of drives to ignore
@@ -35,10 +41,20 @@ public class BackupEngine {
 
         // -----------------------------------------------
         // Find the drives to backup
-        findDrivesToBackup(dd);
+        ArrayList<File> drivesWeMayWantToBackup;
+        drivesWeMayWantToBackup = findDrivesToBackup(dd);
+        // TODO : Test on Windows machine to see if code breaks
+
+        // Tests the drives AFTER the filtering.
+        for (File f : drivesWeMayWantToBackup) {
+            System.out.println(f.getName());
+        }
 
         // Ask which ones to backup, make a list
-        // Options: Yes, No, Don't Ask Again
+        // Options: Yes, No, Don't Ask For This Drive Ever Again
+        // askWhichDrivesToBackup(drivesWeMayWantToBackup);
+
+
         // Determine best method to back them up
         // Back them up
         // Log everything to text file and GUI element
@@ -54,7 +70,8 @@ public class BackupEngine {
      */
     public ArrayList<File> findDrivesToBackup(DisregardDrives driveList) {
 
-        ArrayList<File> currentDrives = null;
+        ArrayList<File> currentDrives;
+        ArrayList<File> temp = new ArrayList<File>();
         File f = null;
 
         if (OS.contains("Mac"))
@@ -67,14 +84,17 @@ public class BackupEngine {
         // Make a TOTAL list of ALL drives on the computer
         currentDrives = new ArrayList<File>(Arrays.asList(f.listFiles()));
 
-        // Remove the ones we KNOW we don't
-        for (File file : currentDrives) {
-            if (dd.contains(file.getName())) {
-                currentDrives.remove(file);
+
+        // Remove the ones we KNOW we don't want to backup
+        for (int i = 0; i < currentDrives.size(); i++) {
+
+            if (dd.shouldBeBackedup(currentDrives.get(i))) {
+                temp.add(currentDrives.get(i));
             }
         }
 
-        return currentDrives;
+
+        return temp;
     }
 
 
@@ -87,18 +107,27 @@ public class BackupEngine {
      */
     public ArrayList<Drive> askWhichDrivesToBackup(ArrayList<File> listToAsk) {
 
-        Object[] options = {"Yes, please",
-                "No, thanks",
-                "No eggs, no ham!"};
-        int n = JOptionPane.showOptionDialog(parentWindow,
-                "Would you like some green eggs to go "
-                        + "with that ham?",
-                "A Silly Question",
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[2]);
+        Object[] options = {"Use as backup drive",
+                "No",
+                "Never use this drive to backup",
+        };
+
+        ArrayList<Drive> drivesToBackup = new ArrayList<Drive>();
+
+        for (File file : listToAsk) {
+
+            int n = JOptionPane.showOptionDialog(parentWindow,
+                    "Would you like to backup files from " + file.getName() + "?",
+                    "DBET - Drive Selection",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[1]);
+
+        }
+
+        return drivesToBackup; // TODO: Test how the JOptionPane works and then test to make sure its behaving.
 
     }
 
@@ -108,7 +137,7 @@ public class BackupEngine {
      *
      * @param backupThisList - List of 1 or more Drive objects that are to be backed up.
      */
-    public void backupData(ArrayList<Drive> backupThisList){
+    public void backupData(ArrayList<File> backupThisList) {
 
     }
 } // END OF BACKUP ENGINE

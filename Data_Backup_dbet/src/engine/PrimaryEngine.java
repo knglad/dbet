@@ -64,7 +64,7 @@ public class PrimaryEngine {
 			double capac = f.getTotalSpace();
 			double free = f.getFreeSpace();
 			double used = capac - free;
-			String fileSystem = "";
+			String fileSystem = OS;
 			
 			Drive drive = new Drive(name, path, capac, free, used, fileSystem);
 			

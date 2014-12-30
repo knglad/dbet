@@ -14,12 +14,19 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
 
     public String fileName = "disregardList"; // The file to be read and loaded
     public DisregardDrives dd;
-    private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp"}; // To be used as a starting point
+    private boolean similar_name_dont_backup = false;
+    // any drive matching these patterns wont be backed up
+    private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp", "Storage", "Adobe", "KeePass", ".DS", "Data Drive"};
+
+
+
 
     public DisregardDrives() {}
 
+
     public boolean addWithoutDuplicates(String keyword) {
         if (this.contains(keyword)) {
+            System.out.println("Failed to add " + keyword + "DUPLICATE ERROR!");
             return false;
         } else {
             this.add(keyword);
@@ -109,6 +116,37 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
         }
 
     }
+
+
+    /**
+     * @param fi - a single file containing a drives information
+     * @return true if it should be backed up, false if not
+     * <p/>
+     * Compares the getName() string of the file to our dd list.
+     */
+    public boolean shouldBeBackedup(File fi) {
+        String name = fi.getName();
+        name = name.toLowerCase();
+
+
+        for (String keyword : this) {
+            keyword = keyword.toLowerCase();
+            if (name.contains(keyword)) {
+                return false;
+            }
+        }
+        if (similar_name_dont_backup == false) {
+            if (name.contains("macintosh hd")) { // EVERYTHING MUST BE LOWERCASE!!!!
+                similar_name_dont_backup = true;
+                return false;
+            } // TODO : Make sure Macintosh HD 1 ... don't get filtered out and only MY Macintosh HD are filtered out.
+        }
+        // The drive does NOT contain any of the keywords in this list, it can be used to backup.
+        return true;
+
+    }
+
+    // TODO : Debug mode to go through list of drives we've disregarded, give the option to possibly remove from that list (human error)
 
 } // END OF DISREGARD LISTS
 
