@@ -50,9 +50,9 @@ public class BackupEngine {
         // TODO : Test on Windows machine to see if code breaks
 
         // Tests the drives AFTER the filtering.
-        for (File f : drivesWeMayWantToBackup) {
-            System.out.println(f.getName());
-        }
+//        for (File f : drivesWeMayWantToBackup) {
+//            System.out.println(f.getName());
+//        }
 
         // Ask which ones to backup, make a list
         // Options: Yes, No, Don't Ask For This Drive Ever Again
@@ -98,7 +98,7 @@ public class BackupEngine {
         else if (OS.contains("Windows")) {
             //Use the Filestore object from FileSystems in java.nio to get ALL possible mounted volumes
             for (FileStore fileStore : FileSystems.getDefault().getFileStores()) {
-                File current = new File(fileStore.name());
+                File current = new File(String.valueOf(fileStore));
 
                 // Filter out the ones we DONT care about
                 if (dd.shouldBeBackedup(current)) {
@@ -128,11 +128,19 @@ public class BackupEngine {
         int counter = 1;
 
         ArrayList<Drive> drivesToBackup = new ArrayList<Drive>();
+        String fileName = "";
 
+        if (listToAsk.isEmpty()) {
+            JOptionPane.showMessageDialog(parentWindow, "No Drives were found that were able to be backed up.");
+        }
         for (File file : listToAsk) {
+            if (primaryEngine.getOS().contains("Mac"))
+                fileName = file.getName();
+            else if (primaryEngine.getOS().contains("Windows"))
+                fileName = file.getPath();
 
             int n = JOptionPane.showOptionDialog(parentWindow,
-                    "Would you like to backup files from " + file.getName() + "?  (" + counter + " / " + listToAsk.size() + ")",
+                    "Would you like to backup files from " + fileName + "?  (" + counter + " / " + listToAsk.size() + ")",
                     "DBET - Drive Selection",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,

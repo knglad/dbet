@@ -53,9 +53,8 @@ public class backupEngineTest {
     public void testFileSystemsForWindows() {
         for (FileStore f : FileSystems.getDefault().getFileStores()) {
             System.out.println(f.name());
-            File file = new File(f.name());
+            File file = new File(String.valueOf(f));
             System.out.println(file.getName());
-
         }
     }
 }

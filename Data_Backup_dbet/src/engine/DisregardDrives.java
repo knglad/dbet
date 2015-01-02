@@ -16,7 +16,8 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
     public DisregardDrives dd;
     private boolean similar_name_dont_backup = false;
     // any drive matching these patterns wont be backed up
-    private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp", "Storage", "Adobe", "KeePass", ".DS", "Data Drive"};
+    private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp", "Storage", "Adobe", "KeePass", ".DS",
+            "Data Drive", "(C:)", "CSC Backup", "System Image"};
 
 
 
@@ -125,7 +126,7 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
      * Compares the getName() string of the file to our dd list.
      */
     public boolean shouldBeBackedup(File fi) {
-        String name = fi.getName();
+        String name = fi.getPath();
         name = name.toLowerCase();
 
 
