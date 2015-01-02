@@ -19,7 +19,7 @@ public class PrimaryEngine {
     private ArrayList<Drive> rawDrives = new ArrayList<Drive>(); // Arraylists make themselves bigger if need be, automatically.
     private boolean listMadeSuccessfully = false;
     /**
-	 * MANUAL HARD CODED DRIVE STRINGS ARE HERE! EDIT IF MOUNT POINTS OR NAMES CHANGE!!!!!!!!
+	 * MANUAL HARD CODED DRIVE STRINGS ARE HERE! EDIT IF MOUNT POINTS OR NAMES CHANGE!!!!!!!! TODO Ensure this is updated
 	 */
 
 			// NOTE: macVolumes must be the absolute path to EACH PARTITIONS ROOT!! Breaks otherwise and doesn't know what to do.
@@ -86,8 +86,24 @@ public class PrimaryEngine {
 	public ArrayList<Drive> getDriveList(){
 		return rawDrives;
 	}
-	
-	
+
+	/**
+	 * @param file -- when given a file creates a Drive object so we can auto calculate storage and avoid IO errors
+	 * @return The converted Drive object
+	 * <p/>
+	 * When we have the file but want to use the Drive object
+	 */
+	public Drive mountPointToDrive(File file) {
+		String name = file.getName(); // /path/to/file/ThisIsTheName
+		String path = file.getAbsolutePath();
+		double capac = file.getTotalSpace();
+		double free = file.getFreeSpace();
+		double used = capac - free;
+		String fileSystem = OS;
+
+		Drive drive = new Drive(name, path, capac, free, used, fileSystem);
+		return drive;
+	}
 	
 	
 	

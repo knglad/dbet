@@ -22,6 +22,7 @@ public class BackupEngine {
     public DisregardDrives dd;
     public PrimaryEngine primaryEngine;
     public JFrame parentWindow;
+    public boolean shouldSaveDisregardDrives = false;
 
     /**
      * @param pe     - Allows data transfer with the central object, and access to useful methods
@@ -55,8 +56,11 @@ public class BackupEngine {
 
         // Ask which ones to backup, make a list
         // Options: Yes, No, Don't Ask For This Drive Ever Again
-        // askWhichDrivesToBackup(drivesWeMayWantToBackup);
+        askWhichDrivesToBackup(drivesWeMayWantToBackup);
 
+        // If something was added to dd, save the list now.
+        if (shouldSaveDisregardDrives)
+            dd.saveList();
 
         // Determine best method to back them up
         // Back them up
@@ -121,12 +125,14 @@ public class BackupEngine {
                 "Never use this drive to backup",
         };
 
+        int counter = 1;
+
         ArrayList<Drive> drivesToBackup = new ArrayList<Drive>();
 
         for (File file : listToAsk) {
 
             int n = JOptionPane.showOptionDialog(parentWindow,
-                    "Would you like to backup files from " + file.getName() + "?",
+                    "Would you like to backup files from " + file.getName() + "?  (" + counter + " / " + listToAsk.size() + ")",
                     "DBET - Drive Selection",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
@@ -134,8 +140,20 @@ public class BackupEngine {
                     options,
                     options[1]);
 
-            System.out.println(n); // TODO: Test how the JOptionPane works and then test to make sure its behaving.
+            // n is the index of the answer -1 is returned if they exit out of it
 
+            // INSANE IF TREE INCOMING!!!!
+            if (n == -1) // Early Cancellation of program (avoids situations where theres HUGE amounts of drives
+                System.exit(0);
+            if (n == 0) // BACKUP THE DRIVE
+                drivesToBackup.add(primaryEngine.mountPointToDrive(file));
+            if (n == 2) { // Never backup this drive!
+                dd.addWithoutDuplicates(file.getName()); // TODO : Ensure file.getName() is appropriate to NEVER see this again.
+                shouldSaveDisregardDrives = true; // Tells the program to save the new DD as something was added
+            }
+
+            // Update counter for the overall count, user friendly GUI element.
+            counter++;
         }
 
         return drivesToBackup;
@@ -148,7 +166,7 @@ public class BackupEngine {
      *
      * @param backupThisList - List of 1 or more Drive objects that are to be backed up.
      */
-    public void backupData(ArrayList<File> backupThisList) {
+    public void backupData(ArrayList<Drive> backupThisList) {
 
     }
 } // END OF BACKUP ENGINE
