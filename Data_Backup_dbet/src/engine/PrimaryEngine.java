@@ -21,8 +21,7 @@ public class PrimaryEngine {
     /**
 	 * MANUAL HARD CODED DRIVE STRINGS ARE HERE! EDIT IF MOUNT POINTS OR NAMES CHANGE!!!!!!!!
 	 */
-	// I couldn't find a dynamic way to get ALL the drives 
-	
+
 			// NOTE: macVolumes must be the absolute path to EACH PARTITIONS ROOT!! Breaks otherwise and doesn't know what to do.
 	private String[] macVolumes = { "/Volumes/Storage/", "/Volumes/Storage2/", "/Volumes/Storage3/"};
     private String[] windowsVolumes = {"F:/CustBackup/"};
@@ -34,13 +33,9 @@ public class PrimaryEngine {
 	 OS = System.getProperty("os.name");
 
         if ( OS.equals("Mac OS X") ){
-		 
 		listMadeSuccessfully =  makeDriveList(macVolumes);
-	}
-	 else if ( OS.contains("Windows") ){ // CONFIRM THIS ON A WINDOWS MACHINE!!!
-		 
+		} else if (OS.contains("Windows")) {
 		 listMadeSuccessfully = makeDriveList(windowsVolumes);
-		 
 	 }
 
 

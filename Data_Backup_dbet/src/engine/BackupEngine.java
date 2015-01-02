@@ -2,6 +2,8 @@ package engine;
 
 import javax.swing.*;
 import java.io.File;
+import java.nio.file.FileStore;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -75,28 +77,32 @@ public class BackupEngine {
         ArrayList<File> temp = new ArrayList<File>();
         File f = null;
 
-        if (OS.contains("Mac"))
+        if (OS.contains("Mac")) {
             f = new File("/Volumes/");
+            // Make a TOTAL list of ALL drives on the computer
+            currentDrives = new ArrayList<File>(Arrays.asList(f.listFiles()));
 
-        else if (OS.contains("Windows")) {
-            f = new File("\\\\.");
-        }
-        // TODO : Find Windows path that contains all mounted volumes
+            // Remove the ones we KNOW we don't want to backup
+            for (int i = 0; i < currentDrives.size(); i++) {
 
-
-        // Make a TOTAL list of ALL drives on the computer
-        currentDrives = new ArrayList<File>(Arrays.asList(f.listFiles()));
-
-
-        // Remove the ones we KNOW we don't want to backup
-        for (int i = 0; i < currentDrives.size(); i++) {
-
-            if (dd.shouldBeBackedup(currentDrives.get(i))) {
-                temp.add(currentDrives.get(i));
+                if (dd.shouldBeBackedup(currentDrives.get(i))) {
+                    temp.add(currentDrives.get(i));
+                }
             }
         }
 
+        else if (OS.contains("Windows")) {
+            //Use the Filestore object from FileSystems in java.nio to get ALL possible mounted volumes
+            for (FileStore fileStore : FileSystems.getDefault().getFileStores()) {
+                File current = new File(fileStore.name());
 
+                // Filter out the ones we DONT care about
+                if (dd.shouldBeBackedup(current)) {
+                    temp.add(current);
+                }
+            }
+        }
+        // TODO : Find Windows path that contains all mounted volumes
         return temp;
     }
 
