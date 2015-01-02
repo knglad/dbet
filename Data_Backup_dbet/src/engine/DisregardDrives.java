@@ -121,7 +121,7 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
     /**
      * @param fi - a single file containing a drives information
      * @return true if it should be backed up, false if not
-     * <p/>
+     *
      * Compares the getName() string of the file to our dd list.
      */
     public boolean shouldBeBackedup(File fi) {
@@ -139,7 +139,7 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
             if (name.contains("macintosh hd")) { // EVERYTHING MUST BE LOWERCASE!!!!
                 similar_name_dont_backup = true;
                 return false;
-            } // TODO : Make sure Macintosh HD 1 ... don't get filtered out and only MY Macintosh HD are filtered out.
+            }
         }
         // The drive does NOT contain any of the keywords in this list, it can be used to backup.
         return true;

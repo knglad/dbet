@@ -78,7 +78,7 @@ public class BackupEngine {
             f = new File("/Volumes/");
 
         else if (OS.contains("Windows"))
-            f = new File("/");
+            f = new File("\\\\.\\");
         // TODO : Find Windows path that contains all mounted volumes
 
 
