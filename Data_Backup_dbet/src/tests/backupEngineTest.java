@@ -5,6 +5,9 @@ import engine.PrimaryEngine;
 import org.junit.Test;
 
 import javax.swing.*;
+import java.io.File;
+import java.nio.file.FileStore;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 
 import static junit.framework.TestCase.assertFalse;
@@ -44,7 +47,15 @@ public class backupEngineTest {
 
         assertTrue(list.get(1).contains("with"));
         assertTrue(list.get(1).contains("space"));
+    }
 
+    @Test
+    public void testFileSystemsForWindows() {
+        for (FileStore f : FileSystems.getDefault().getFileStores()) {
+            System.out.println(f.name());
+            File file = new File(f.name());
+            System.out.println(file.getName());
 
+        }
     }
 }

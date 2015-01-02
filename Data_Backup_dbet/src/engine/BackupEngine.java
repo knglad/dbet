@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+
 /**
  * @author Kevin Gladhart
  *
@@ -77,8 +78,9 @@ public class BackupEngine {
         if (OS.contains("Mac"))
             f = new File("/Volumes/");
 
-        else if (OS.contains("Windows"))
-            f = new File("\\\\.\\");
+        else if (OS.contains("Windows")) {
+            f = new File("\\\\.");
+        }
         // TODO : Find Windows path that contains all mounted volumes
 
 
@@ -126,9 +128,11 @@ public class BackupEngine {
                     options,
                     options[1]);
 
+            System.out.println(n); // TODO: Test how the JOptionPane works and then test to make sure its behaving.
+
         }
 
-        return drivesToBackup; // TODO: Test how the JOptionPane works and then test to make sure its behaving.
+        return drivesToBackup;
 
     }
 
