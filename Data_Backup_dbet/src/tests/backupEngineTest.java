@@ -24,6 +24,15 @@ public class backupEngineTest {
         JFrame jFrame = new JFrame();
 
         BackupEngine backupEngine = new BackupEngine(pe, jFrame);
+
+        // Mac tested for proper filtering of unwanted drives. PASSED
+        // Windows tested for proper filtering of unwanted drives. PASSED
+        // Tested for dynamic list saving, procedure -- PASSED using LM PNP on multiple tries.
+            /*
+             * Remove (temporarily) one of the dd's default keywords so that a drive is detected as backup-able
+             * When prompted by the JOptionPane have it add the keyword to the list and close the program.
+             * Rerun the program and see if it is detected (should load the list automatically).
+             */
     }
 
 

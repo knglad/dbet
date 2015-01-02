@@ -104,7 +104,18 @@ public class PrimaryEngine {
 		Drive drive = new Drive(name, path, capac, free, used, fileSystem);
 		return drive;
 	}
-	
+
+	public Drive getHighestStorageDrive() {
+		Drive highest = rawDrives.get(0);
+
+		for (int i = 1; i < rawDrives.size(); i++) {
+			if (rawDrives.get(i).freeCapacity > highest.freeCapacity) {
+				highest = rawDrives.get(i);
+			}
+		}
+
+		return highest;
+	}
 	
 	
 } // END OF PRIMARY ENGINE

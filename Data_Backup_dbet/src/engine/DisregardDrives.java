@@ -111,6 +111,7 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
      * this method uses a default hard coded array to create a new one.
      */
     public void createDefaultList(){
+        System.out.println("Creating default list for DisregardDrives \n\n");
 
         for(String s : disregardKeywords){
             this.addWithoutDuplicates(s);

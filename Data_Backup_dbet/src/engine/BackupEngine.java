@@ -29,7 +29,7 @@ public class BackupEngine {
      * @param window - Allows sending of signals to the window and its graphical components
      */
 
-    public BackupEngine(PrimaryEngine pe, JFrame window) {
+    public BackupEngine(PrimaryEngine pe, JFrame window) { // THIS IS THE BIG KAHUNA! The whole algo is this constructor.
 
         primaryEngine = pe;
         parentWindow = window;
@@ -40,28 +40,25 @@ public class BackupEngine {
         // Drives we KNOW we don't want to backup, as users use the program it will learn what it shouldn't look for.
         dd = new DisregardDrives();
 
-        // Load in the list of drives to ignore
+        // Load in the list of drives to ignore, if it's not found it uses the default.
         dd.loadList();
 
         // -----------------------------------------------
         // Find the drives to backup
         ArrayList<File> drivesWeMayWantToBackup;
         drivesWeMayWantToBackup = findDrivesToBackup(dd);
-        // TODO : Test on Windows machine to see if code breaks
 
-        // Tests the drives AFTER the filtering.
-//        for (File f : drivesWeMayWantToBackup) {
-//            System.out.println(f.getName());
-//        }
+
 
         // Ask which ones to backup, make a list
         // Options: Yes, No, Don't Ask For This Drive Ever Again
         askWhichDrivesToBackup(drivesWeMayWantToBackup);
 
         // If something was added to dd, save the list now.
-        if (shouldSaveDisregardDrives)
+        if (shouldSaveDisregardDrives) {
             dd.saveList();
-
+            shouldSaveDisregardDrives = false; // TODO This flag might not be needed, remove for performance once tested.
+        }
         // Determine best method to back them up
         // Back them up
         // Log everything to text file and GUI element
@@ -149,8 +146,8 @@ public class BackupEngine {
                     options[1]);
 
             // n is the index of the answer -1 is returned if they exit out of it
+            // JOptionPane if tree that handles ALL required responses given by the user.
 
-            // INSANE IF TREE INCOMING!!!!
             if (n == -1) // Early Cancellation of program (avoids situations where theres HUGE amounts of drives
                 System.exit(0);
             if (n == 0) // BACKUP THE DRIVE
