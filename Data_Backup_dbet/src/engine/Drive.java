@@ -1,5 +1,7 @@
 package engine;
 
+import java.io.File;
+
 /**
  * 
  * @author kevin
@@ -17,9 +19,10 @@ public class Drive {
 	public double freeCapacity;
 	public double usedCapacity;
 	public String fileSystem;
+	public File file;
 	
 	// This is just a way for us to work with the drive and not keep the resource tied up so it can be unmounted etc. 
-	public Drive(String namee, String mount_point, double total_capac, double free_capac, double used_capac, String fs){
+	public Drive(String namee, String mount_point, double total_capac, double free_capac, double used_capac, String fs, File f) {
 
 		name = namee;
 		mountPoint = mount_point;
@@ -27,6 +30,7 @@ public class Drive {
 		freeCapacity = free_capac;
 		usedCapacity = used_capac;
 		fileSystem = fs;
+		file = f;
 	}
 	
 	/**

@@ -103,7 +103,6 @@ public class BackupEngine {
                 }
             }
         }
-        // TODO : Find Windows path that contains all mounted volumes
         return temp;
     }
 
@@ -146,14 +145,14 @@ public class BackupEngine {
                     options[1]);
 
             // n is the index of the answer -1 is returned if they exit out of it
-            // JOptionPane if tree that handles ALL required responses given by the user.
+            // JOptionPane logic tree that handles ALL required responses given by the user.
 
             if (n == -1) // Early Cancellation of program (avoids situations where theres HUGE amounts of drives
                 System.exit(0);
             if (n == 0) // BACKUP THE DRIVE
                 drivesToBackup.add(primaryEngine.mountPointToDrive(file));
             if (n == 2) { // Never backup this drive!
-                dd.addWithoutDuplicates(file.getName()); // TODO : Ensure file.getName() is appropriate to NEVER see this again.
+                dd.addWithoutDuplicates(file.getName());
                 shouldSaveDisregardDrives = true; // Tells the program to save the new DD as something was added
             }
 
@@ -172,6 +171,10 @@ public class BackupEngine {
      * @param backupThisList - List of 1 or more Drive objects that are to be backed up.
      */
     public void backupData(ArrayList<Drive> backupThisList) {
+
+        for (Drive drive : backupThisList) {
+
+        }
 
     }
 } // END OF BACKUP ENGINE

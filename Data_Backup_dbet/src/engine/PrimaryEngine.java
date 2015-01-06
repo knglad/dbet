@@ -7,9 +7,9 @@ import java.util.ArrayList;
  * 
  * @author kevin
  *
- *	This class is used to determine what subclasses are needed to be ran.
- * Things like determining which OS we are using and if we want a FRONT or BACK
- * room MODE.
+ * Primary Engine handles the interactions for the drives that we will backup TO, that is to say the destination for
+ * the data we want to backup.
+ *
  */
 
 public class PrimaryEngine {
@@ -30,7 +30,7 @@ public class PrimaryEngine {
 
     public PrimaryEngine(){
 		// Determine which OS we are working with
-	 OS = System.getProperty("os.name");
+		OS = System.getProperty("os.name");
 
         if ( OS.equals("Mac OS X") ){
 		listMadeSuccessfully =  makeDriveList(macVolumes);
@@ -40,7 +40,7 @@ public class PrimaryEngine {
 
 
     }
-	
+
 	/**
 	 *
      * @param mountPoint
@@ -60,8 +60,8 @@ public class PrimaryEngine {
 			double free = f.getFreeSpace();
 			double used = capac - free;
 			String fileSystem = OS;
-			
-			Drive drive = new Drive(name, path, capac, free, used, fileSystem);
+
+			Drive drive = new Drive(name, path, capac, free, used, fileSystem, f);
 			
 			rawDrives.add(drive); // add this newly created file to the list, the next available position.
 		}
@@ -72,20 +72,6 @@ public class PrimaryEngine {
 			return true; // there's something in it, that's all this cares about. 
 	}
 
-
-    //////// GETTERS AND SETTERS //////////////////////////////
-	
-	public String getOS(){
-		return OS;
-	}
-	
-	public boolean isListMade(){
-		return listMadeSuccessfully;
-	}
-	
-	public ArrayList<Drive> getDriveList(){
-		return rawDrives;
-	}
 
 	/**
 	 * @param file -- when given a file creates a Drive object so we can auto calculate storage and avoid IO errors
@@ -101,14 +87,14 @@ public class PrimaryEngine {
 		double used = capac - free;
 		String fileSystem = OS;
 
-		Drive drive = new Drive(name, path, capac, free, used, fileSystem);
+		Drive drive = new Drive(name, path, capac, free, used, fileSystem, file);
 		return drive;
 	}
 
 	public Drive getHighestStorageDrive() {
 		Drive highest = rawDrives.get(0);
 
-		for (int i = 1; i < rawDrives.size(); i++) {
+		for (int i = 1; i < rawDrives.size(); i++) { // i = 1 because highest starts out as the first drive.
 			if (rawDrives.get(i).freeCapacity > highest.freeCapacity) {
 				highest = rawDrives.get(i);
 			}
@@ -116,6 +102,23 @@ public class PrimaryEngine {
 
 		return highest;
 	}
+
+
+	//////// GETTERS AND SETTERS //////////////////////////////
+	
+	public String getOS(){
+		return OS;
+	}
+	
+	public boolean isListMade(){
+		return listMadeSuccessfully;
+	}
+	
+	public ArrayList<Drive> getDriveList(){
+		return rawDrives;
+	}
+
+
 	
 	
 } // END OF PRIMARY ENGINE
