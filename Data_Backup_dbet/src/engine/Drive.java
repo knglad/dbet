@@ -64,6 +64,10 @@ public class Drive {
 	public String getFileSystem(){
 		return fileSystem;
 	}
+
+	public File getFile() {
+		return file;
+	}
 	
 	public boolean setCapacity(String type, double amt){
 		/**
