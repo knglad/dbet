@@ -15,7 +15,8 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
     public String fileName = "disregardList"; // The file to be read and loaded
     public DisregardDrives dd;
     private boolean similar_name_dont_backup = false;
-    // any drive matching these patterns wont be backed up
+    // any drive matching these patterns wont be backed up, must match the pattern in the strings entirety
+    // I.E "LM PNP" wont filter a drive with just "LM" or just "PNP".
     private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp", "Storage", "Adobe", "KeePass", ".DS",
             "Data Drive", "(C:)", "CSC Backup", "System Image"};
 
@@ -145,7 +146,6 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
         }
         // The drive does NOT contain any of the keywords in this list, it can be used to backup.
         return true;
-
     }
 
     // TODO : Debug mode to go through list of drives we've disregarded, give the option to possibly remove from that list (human error)

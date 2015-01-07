@@ -71,6 +71,8 @@ public class BackupEngine {
      *
      * This will look through the systems entire mount-points and find ones that we may care
      * about and return the list.
+     *
+     * FILE SYSTEM SENSITIVE METHOD (Does NOT support Linux at this time)
      */
     public ArrayList<File> findDrivesToBackup(DisregardDrives driveList) {
 
@@ -177,12 +179,14 @@ public class BackupEngine {
     public void backupData(ArrayList<Drive> backupThisList, String[]... mode) {
 
         for (Drive drive : backupThisList) {
-            // The process runtine uses a string array to handle creating a single command
+            // The process runtime uses a string array to handle creating a single command
             // I.E. String[]{"cp", "-Rv", "pathToBackup", "destination"};
 
             // Create the String[] for the backup based on the OS of this drive
             String[] backupCommand = new String[25]; // TODO Ensure the size does not present an issue.
             backupCommand[0] = "cp";
+
+            // All Operating Systems use cp as an alias for copy-items, so we start at position 1 in the command array
             int startAddingFilesIntoCommand = 1;
 
             if (drive.getFileSystem().contains("Mac")) {
@@ -202,13 +206,24 @@ public class BackupEngine {
             }
 
             // Create the destination folder TODO Use JOptionPane to ask the user for input and mkdir
+
+            String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021",
+                    "Make Directory", JOptionPane.DEFAULT_OPTION);
+
             // Add the Destination folder to the command
+            backupCommand[startAddingFilesIntoCommand] = mkdir;
 
-            // Powershell uses '-recurse' after the command to handle folders
 
-            if (drive.getFileSystem().contains("Windows"))
+            // Powershell uses '-recurse' after the command to handle folders and -verbose to get the data
+            if (drive.getFileSystem().contains("Windows")) {
+                startAddingFilesIntoCommand++; // Update the counter so we're not deleting important data
                 backupCommand[startAddingFilesIntoCommand] = "-recurse";
 
+                startAddingFilesIntoCommand++;
+                backupCommand[startAddingFilesIntoCommand] = "-verbose";
+            }
+
+            // Pump the output to the GUI, which the GUI will save the output into a log file for later examination.
 
 
         }
