@@ -1,5 +1,7 @@
 package tests;
 
+import engine.Drive;
+import engine.PrimaryEngine;
 import org.junit.Test;
 
 import java.io.File;
@@ -18,5 +20,16 @@ public class fileMountTest {
 
         for (File file : mountPoints)
             System.out.println(file.getPath());
+    }
+
+    // Test the primaryEngines rawDrives variable to see what happens if a drive we EXPECT
+    // to be there isn't
+    @Test
+    public void testRawDrivesWhenNotPresent() {
+        PrimaryEngine pe = new PrimaryEngine();
+
+        for (Drive d : pe.getDriveList()) {
+            System.out.println(d.getMountPoint() + "  " + d.getCapacity("free"));
+        }
     }
 }

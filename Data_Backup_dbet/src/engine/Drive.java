@@ -18,8 +18,8 @@ public class Drive {
 	public double totalCapacity;
 	public double freeCapacity;
 	public double usedCapacity;
-	public String fileSystem;
 	public File file;
+	public String dataDestination;
 	
 	// This is just a way for us to work with the drive and not keep the resource tied up so it can be unmounted etc. 
 	public Drive(String namee, String mount_point, double total_capac, double free_capac, double used_capac, String fs, File f) {
@@ -29,7 +29,6 @@ public class Drive {
 		totalCapacity = total_capac;
 		freeCapacity = free_capac;
 		usedCapacity = used_capac;
-		fileSystem = fs;
 		file = f;
 	}
 	
@@ -60,10 +59,6 @@ public class Drive {
 		else
 			return 0.0;
 	}
-	
-	public String getFileSystem(){
-		return fileSystem;
-	}
 
 	public File getFile() {
 		return file;
@@ -93,7 +88,18 @@ public class Drive {
 			else
 				return false;
 	}
-	
-	
+
+	public void setDataDestination(String s) {
+		dataDestination = s;
+	}
+
+	public String printCapacity(String type) {
+		if (type.equals("total"))
+			return totalCapacity + "GB";
+		else if (type.equals("free"))
+			return freeCapacity + "GB";
+		else if (type.equals("used"))
+			return usedCapacity + "GB";
+	}
 	
 } // End class DRIVE

@@ -52,7 +52,8 @@ public class BackupEngine {
 
         // Ask which ones to backup, make a list
         // Options: Yes, No, Don't Ask For This Drive Ever Again
-        askWhichDrivesToBackup(drivesWeMayWantToBackup);
+        // The list that the user wants us to backup, back it up.
+        backupData(askWhichDrivesToBackup(drivesWeMayWantToBackup));
 
         // If something was added to dd, save the list now.
         if (shouldSaveDisregardDrives) {
@@ -130,36 +131,37 @@ public class BackupEngine {
 
         if (listToAsk.isEmpty()) {
             JOptionPane.showMessageDialog(parentWindow, "No Drives were found that were able to be backed up.");
-        }
-        for (File file : listToAsk) {
-            if (primaryEngine.getOS().contains("Mac"))
-                fileName = file.getName();
-            else if (primaryEngine.getOS().contains("Windows"))
-                fileName = file.getPath();
+        } else {
+            for (File file : listToAsk) {
+                if (primaryEngine.getOS().contains("Mac"))
+                    fileName = file.getName();
+                else if (primaryEngine.getOS().contains("Windows"))
+                    fileName = file.getPath();
 
-            int n = JOptionPane.showOptionDialog(parentWindow,
-                    "Would you like to backup files from " + fileName + "?  (" + counter + " / " + listToAsk.size() + ")",
-                    "DBET - Drive Selection",
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    options,
-                    options[1]);
+                int n = JOptionPane.showOptionDialog(parentWindow,
+                        "Would you like to backup files from " + fileName + "?  (" + counter + " / " + listToAsk.size() + ")",
+                        "DBET - Drive Selection",
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[1]);
 
-            // n is the index of the answer -1 is returned if they exit out of it
-            // JOptionPane logic tree that handles ALL required responses given by the user.
+                // n is the index of the answer -1 is returned if they exit out of it
+                // JOptionPane logic tree that handles ALL required responses given by the user.
 
-            if (n == -1) // Early Cancellation of program (avoids situations where theres HUGE amounts of drives
-                System.exit(0);
-            if (n == 0) // BACKUP THE DRIVE
-                drivesToBackup.add(primaryEngine.mountPointToDrive(file));
-            if (n == 2) { // Never backup this drive!
-                dd.addWithoutDuplicates(file.getName());
-                shouldSaveDisregardDrives = true; // Tells the program to save the new DD as something was added
+                if (n == -1) // Early Cancellation of program (avoids situations where theres HUGE amounts of drives
+                    System.exit(0);
+                if (n == 0) // BACKUP THE DRIVE
+                    drivesToBackup.add(primaryEngine.mountPointToDrive(file));
+                if (n == 2) { // Never backup this drive!
+                    dd.addWithoutDuplicates(file.getName());
+                    shouldSaveDisregardDrives = true; // Tells the program to save the new DD as something was added
+                }
+
+                // Update counter for the overall count, user friendly GUI element.
+                counter++;
             }
-
-            // Update counter for the overall count, user friendly GUI element.
-            counter++;
         }
 
         return drivesToBackup;
@@ -182,46 +184,48 @@ public class BackupEngine {
             // The process runtime uses a string array to handle creating a single command
             // I.E. String[]{"cp", "-Rv", "pathToBackup", "destination"};
 
-            // Create the String[] for the backup based on the OS of this drive
-            String[] backupCommand = new String[25]; // TODO Ensure the size does not present an issue.
-            backupCommand[0] = "cp";
+            // Use ArrayList to avoid extra spaces and keep array size to a minimum
+            ArrayList<String> backupCommand = new ArrayList<String>();
+            backupCommand.add("cp");
 
-            // All Operating Systems use cp as an alias for copy-items, so we start at position 1 in the command array
-            int startAddingFilesIntoCommand = 1;
-
-            if (drive.getFileSystem().contains("Mac")) {
-                backupCommand[1] = "-Rv";
-                startAddingFilesIntoCommand = 2;
+            if (primaryEngine.getOS().contains("Mac")) {
+                backupCommand.add("-Rv");
             }
+
             // Find all the folders we want to backup from the drive
+            backupCommand.addAll(findImportantFiles(drive.getFile().listFiles()));
 
 
-            ArrayList<String> childrenToBackup = findImportantFiles(File.listRoots());
-
-            for (String s : childrenToBackup) {
-                // Dynamic array index insertion to handle the case if its a Mac system or not
-                // Also takes the arraylist and turns it into the array format we need for runtime.exec()
-                backupCommand[startAddingFilesIntoCommand] = s;
-                startAddingFilesIntoCommand++;
-            }
 
             // Create the destination folder TODO Use JOptionPane to ask the user for input and mkdir
 
-            String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021",
-                    "Make Directory", JOptionPane.DEFAULT_OPTION);
+            String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)",
+                    "Make Directory", JOptionPane.QUESTION_MESSAGE);
 
+            // replace spaces in the mkdir with "\ "
+            mkdir = mkdir.replace(" ", "\\ ");
+
+            // Which drive do we want to backup to?
             // Add the Destination folder to the command
-            backupCommand[startAddingFilesIntoCommand] = mkdir;
+            backupCommand.add(primaryEngine.getHighestStorageDrive().getMountPoint() + "/" + mkdir + "/");
 
 
             // Powershell uses '-recurse' after the command to handle folders and -verbose to get the data
-            if (drive.getFileSystem().contains("Windows")) {
-                startAddingFilesIntoCommand++; // Update the counter so we're not deleting important data
-                backupCommand[startAddingFilesIntoCommand] = "-recurse";
-
-                startAddingFilesIntoCommand++;
-                backupCommand[startAddingFilesIntoCommand] = "-verbose";
+            if (primaryEngine.getOS().contains("Windows")) {
+                backupCommand.add("-recurse");
+                backupCommand.add("-verbose");
             }
+
+            // the command has been built lets make it into an array
+            String[] finalCommand = backupCommand.toArray(new String[backupCommand.size()]);
+
+            for (int i = 0; i < finalCommand.length; i++) {
+                String s = finalCommand[i];
+                System.out.println("s = " + s);
+            }
+
+            // Make the directory actually exist so we can back up to it
+
 
             // Pump the output to the GUI, which the GUI will save the output into a log file for later examination.
 
@@ -250,6 +254,9 @@ public class BackupEngine {
                 if (f.getName().toLowerCase().contains(s.toLowerCase())) {
                     addToList = false;
                     break; // it wont be anything else, why keep looping?
+                } else if (f.getName().toCharArray()[0] == '.') { // periods before filenames shouldn't be backed up.
+                    addToList = false;
+                    break;
                 }
             }
 

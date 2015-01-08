@@ -53,17 +53,11 @@ public class PrimaryEngine {
 		for (String s : mountPoint){// Advanced for loop, for each String I'm calling s WITHIN mountPoint array, do the following.
 			
 			File f = new File(s); // Make a file out of the string mount point
-			
-			String name = f.getName(); // Name
-			String path = f.getAbsolutePath();
-			double capac = f.getTotalSpace();
-			double free = f.getFreeSpace();
-			double used = capac - free;
-			String fileSystem = OS;
 
-			Drive drive = new Drive(name, path, capac, free, used, fileSystem, f);
-			
-			rawDrives.add(drive); // add this newly created file to the list, the next available position.
+			if (f.getTotalSpace() != 0.0) // pointless if it doesn't exist.
+				// add this newly created file to the list, the next available position.
+				rawDrives.add(mountPointToDrive(f));
+
 		}
 		
 		if (rawDrives.size() == 0 || rawDrives.size() < mountPoint.length)
@@ -82,8 +76,8 @@ public class PrimaryEngine {
 	public Drive mountPointToDrive(File file) {
 		String name = file.getName(); // /path/to/file/ThisIsTheName
 		String path = file.getAbsolutePath();
-		double capac = file.getTotalSpace();
-		double free = file.getFreeSpace();
+		double capac = byteToGigabyte(file.getTotalSpace());
+		double free = byteToGigabyte(file.getFreeSpace());
 		double used = capac - free;
 		String fileSystem = OS;
 
@@ -99,6 +93,9 @@ public class PrimaryEngine {
 				highest = rawDrives.get(i);
 			}
 		}
+
+		if (highest.getName().equals("Storage"))
+			highest.mountPoint = highest.mountPoint + "/customer\\ backup/";
 
 		return highest;
 	}
@@ -118,7 +115,17 @@ public class PrimaryEngine {
 		return rawDrives;
 	}
 
+	public float byteToGigabyte(float num) {
 
+		int divisor = 1000; // definition of when to change names in byte size kilo -> mega etc
+		// On Mac OS X, 1000 is the appropriate one.
+
+		//TODO Test divisor on Windows to see if they use 1024 instead
+
+		float giga = (((num / divisor) / divisor) / divisor);
+
+		return giga;
+	}
 	
 	
 } // END OF PRIMARY ENGINE
