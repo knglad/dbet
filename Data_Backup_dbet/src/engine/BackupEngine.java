@@ -2,6 +2,7 @@ package engine;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
@@ -204,10 +205,11 @@ public class BackupEngine {
 
             // replace spaces in the mkdir with "\ "
             mkdir = mkdir.replace(" ", "\\ ");
+            mkdir = primaryEngine.getHighestStorageDrive().getMountPoint() + "/" + mkdir + "/";
 
             // Which drive do we want to backup to?
             // Add the Destination folder to the command
-            backupCommand.add(primaryEngine.getHighestStorageDrive().getMountPoint() + "/" + mkdir + "/");
+            backupCommand.add(mkdir);
 
 
             // Powershell uses '-recurse' after the command to handle folders and -verbose to get the data
@@ -225,7 +227,14 @@ public class BackupEngine {
             }
 
             // Make the directory actually exist so we can back up to it
+//            String[] makeDirectoryCommand = new String[]{"echo", "victorHorse!|", "sudo","-S;", "mkdir", mkdir};
+            String[] makeDirectoryCommand = new String[]{"echo victorHorse!", "|", "sudo", "-S", "mkdir", mkdir};
+            try {
+                Process p = Runtime.getRuntime().exec(makeDirectoryCommand);
 
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
 
             // Pump the output to the GUI, which the GUI will save the output into a log file for later examination.
 

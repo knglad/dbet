@@ -100,6 +100,8 @@ public class Drive {
 			return freeCapacity + "GB";
 		else if (type.equals("used"))
 			return usedCapacity + "GB";
+		else
+			return "Improper type in setDataDestination for Drive Object";
 	}
 	
 } // End class DRIVE
