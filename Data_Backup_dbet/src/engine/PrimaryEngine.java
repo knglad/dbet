@@ -94,8 +94,9 @@ public class PrimaryEngine {
 			}
 		}
 
-		if (highest.getName().equals("Storage"))
-			highest.mountPoint = highest.mountPoint + "/customer\\ backup";
+		if (highest.getName().equals("Storage")) // TODO :: Sun bug where getRuntime().exec() can't handle "\\ "
+			// Had to rename folder without spaces, works fine otherwise.
+			highest.mountPoint = highest.mountPoint + "/customer_backup/";
 
 		return highest;
 	}

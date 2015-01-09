@@ -199,13 +199,28 @@ public class BackupEngine {
 
 
             // Create the destination folder TODO Use JOptionPane to ask the user for input and mkdir
+            String users = "";
+            try {
+                File getUsers = new File(drive.getMountPoint() + "/Users/");
+                for (File f : getUsers.listFiles()) {
+                    users += ", " + f.getName();
+                }
+            } catch (NullPointerException npe) {
+                users = "No Users Detected";
+            }
 
-            String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)",
+
+            String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021) \n" +
+                            "Potential users: " + users,
                     "Make Directory", JOptionPane.QUESTION_MESSAGE);
 
             // replace spaces in the mkdir with "\ "
-            mkdir = mkdir.replace(" ", "\\ ");
-            mkdir = primaryEngine.getHighestStorageDrive().getMountPoint() + "/" + mkdir + "/";
+
+            // TODO : Mac made the folder 13021\ Kevin\ Tester in the actual folder
+            //mkdir = mkdir.replace(" ", "\\ ");
+
+            // Get exact path to the destination folder
+            mkdir = primaryEngine.getHighestStorageDrive().getMountPoint() + mkdir + "/";
 
             // Which drive do we want to backup to?
             // Add the Destination folder to the command
@@ -221,21 +236,22 @@ public class BackupEngine {
             // the command has been built lets make it into an array
             String[] finalCommand = backupCommand.toArray(new String[backupCommand.size()]);
 
+            //  TODO : OUTPUT LOOP FOR TESTING PURPOSES ONLY
             for (int i = 0; i < finalCommand.length; i++) {
                 String s = finalCommand[i];
                 System.out.println("s = " + s);
             }
 
             // Make the directory actually exist so we can back up to it
-//            String[] makeDirectoryCommand = new String[]{"echo", "victorHorse!|", "sudo","-S;", "mkdir", mkdir};
-            String[] makeDirectoryCommand = new String[]{"echo victorHorse!", "|", "sudo", "-S", "mkdir", mkdir};
+            String[] makeDirectoryCommand = new String[]{"mkdir", mkdir};
             try {
                 Process p = Runtime.getRuntime().exec(makeDirectoryCommand);
-
             } catch (IOException ioe) {
                 ioe.printStackTrace();
+                System.out.println("Could not reach destination folder to create directory.");
             }
 
+            // Now actually back it up.
             // Pump the output to the GUI, which the GUI will save the output into a log file for later examination.
 
 
