@@ -19,7 +19,7 @@ public class PrimaryEngine {
     private ArrayList<Drive> rawDrives = new ArrayList<Drive>(); // Arraylists make themselves bigger if need be, automatically.
     private boolean listMadeSuccessfully = false;
     /**
-	 * MANUAL HARD CODED DRIVE STRINGS ARE HERE! EDIT IF MOUNT POINTS OR NAMES CHANGE!!!!!!!! TODO Ensure this is updated
+	 * MANUAL HARD CODED DRIVE STRINGS ARE HERE! EDIT IF MOUNT POINTS OR NAMES CHANGE!!!!!!!! TODO WATCH Ensure this is updated
 	 */
 
 			// NOTE: macVolumes must be the absolute path to EACH PARTITIONS ROOT!! Breaks otherwise and doesn't know what to do.
@@ -94,7 +94,7 @@ public class PrimaryEngine {
 			}
 		}
 
-		if (highest.getName().equals("Storage")) // TODO :: Sun bug where getRuntime().exec() can't handle "\\ "
+		if (highest.getName().equals("Storage")) // TODO BUG WORKAROUND: Sun bug where getRuntime().exec() can't handle "\\ "
 			// Had to rename folder without spaces, works fine otherwise.
 			highest.mountPoint = highest.mountPoint + "/customer_backup/";
 
@@ -121,7 +121,7 @@ public class PrimaryEngine {
 		int divisor = 1000; // definition of when to change names in byte size kilo -> mega etc
 		// On Mac OS X, 1000 is the appropriate one.
 
-		//TODO Test divisor on Windows to see if they use 1024 instead
+		//TODO :: Test divisor on Windows to see if they use 1024 instead
 
 		float giga = (((num / divisor) / divisor) / divisor);
 

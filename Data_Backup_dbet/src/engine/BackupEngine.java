@@ -26,6 +26,7 @@ public class BackupEngine {
     public PrimaryEngine primaryEngine;
     public JFrame parentWindow;
     public boolean shouldSaveDisregardDrives = false;
+    public StringBuilder log;
 
     /**
      * @param pe     - Allows data transfer with the central object, and access to useful methods
@@ -61,7 +62,7 @@ public class BackupEngine {
         // If something was added to dd, save the list now.
         if (shouldSaveDisregardDrives) {
             dd.saveList();
-            shouldSaveDisregardDrives = false; // TODO This flag might not be needed, remove for performance once tested.
+            shouldSaveDisregardDrives = false; // TODO  WATCH This flag might not be needed, remove for performance once tested.
         }
         // Determine best method to back them up
         // Back them up
@@ -182,6 +183,7 @@ public class BackupEngine {
      *             new thread for each drive it backs up and then closes the thread upon completion of that task.
      */
     public void backupData(ArrayList<Drive> backupThisList, String[]... mode) {
+        // TODO :: Test this with a drive that simulates a drive containing an OS and has a Users folder + Applications Folder
 
         for (Drive drive : backupThisList) {
             // The process runtime uses a string array to handle creating a single command
@@ -207,7 +209,7 @@ public class BackupEngine {
             backupCommand.addAll(fullPathFilesList);
 
 
-            // Create the destination folder TODO Use JOptionPane to ask the user for input and mkdir
+            // Create the destination folder
             String users = "";
             try {
                 File getUsers = new File(drive.getMountPoint() + "/Users/");
@@ -225,7 +227,7 @@ public class BackupEngine {
 
             // replace spaces in the mkdir with "\ "
 
-            // TODO : Mac made the folder 13021\ Kevin\ Tester in the actual folder
+            // TODO WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
             //mkdir = mkdir.replace(" ", "\\ ");
 
             // Get exact path to the destination folder
@@ -242,14 +244,9 @@ public class BackupEngine {
                 backupCommand.add("-verbose");
             }
 
+
             // the command has been built lets make it into an array
             String[] finalCommand = backupCommand.toArray(new String[backupCommand.size()]);
-
-            //  TODO : OUTPUT LOOP FOR TESTING PURPOSES ONLY
-            for (int i = 0; i < finalCommand.length; i++) {
-                String s = finalCommand[i];
-                System.out.println("s = " + s);
-            }
 
             // Make the directory actually exist so we can back up to it
             String[] makeDirectoryCommand = new String[]{"mkdir", mkdir};
@@ -259,6 +256,7 @@ public class BackupEngine {
                 ioe.printStackTrace();
                 System.out.println("Could not reach destination folder to create directory.");
             }
+
 
             // Now actually back it up.
             // Pump the output to the GUI, which the GUI will save the output into a log file for later examination.
@@ -274,12 +272,13 @@ public class BackupEngine {
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
                 StringBuilder stringBuilder = new StringBuilder();
-                String line;
+                String line; // Something to hold the current string so it can be saved and checked
 
+                // Statistics to help determine if the backup worked or not.
                 int totalLineCounter = 0;
                 int errorCounter = 0;
                 while ((line = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(line + "\n"); // TODO : does this need a newline to make it look pretty?
+                    stringBuilder.append(line + "\n");
                     totalLineCounter++;
                     if (line.contains("error"))
                         errorCounter++;
@@ -287,8 +286,8 @@ public class BackupEngine {
 
                 process.waitFor();
                 stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
-                stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + totalLineCounter + "\n");
-                stringBuilder.append(Math.round(errorCounter / totalLineCounter) + "% Errors");
+                stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + totalLineCounter);
+                stringBuilder.append(" " + Math.round(errorCounter / totalLineCounter) + "%");
 
                 // Do something with the string, like save it to a text file or something. 
                 System.out.println(stringBuilder.toString());
@@ -301,12 +300,7 @@ public class BackupEngine {
                 ie.printStackTrace();
                 System.out.println("Interrupted During Out/In/Error stream reading");
             }
-
-
-
-
         }
-
     }
 
 
