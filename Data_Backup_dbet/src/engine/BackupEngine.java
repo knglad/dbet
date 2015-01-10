@@ -1,8 +1,10 @@
 package engine;
 
 import javax.swing.*;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
@@ -193,9 +195,16 @@ public class BackupEngine {
                 backupCommand.add("-Rv");
             }
 
+            ArrayList<String> fullPathFilesList = new ArrayList<String>();
             // Find all the folders we want to backup from the drive
-            backupCommand.addAll(findImportantFiles(drive.getFile().listFiles()));
+            for (String fileName : findImportantFiles(drive.getFile().listFiles())) {
+                String fullPathFile = drive.getFile().getPath() + "/" + fileName;
+                fullPathFilesList.add(fullPathFile);
 
+                System.out.println(fullPathFile);
+            }
+
+            backupCommand.addAll(fullPathFilesList);
 
 
             // Create the destination folder TODO Use JOptionPane to ask the user for input and mkdir
@@ -253,6 +262,47 @@ public class BackupEngine {
 
             // Now actually back it up.
             // Pump the output to the GUI, which the GUI will save the output into a log file for later examination.
+
+            // Takes a List<String> in the constructor or just a string
+            ProcessBuilder processBuilder = new ProcessBuilder(backupCommand);
+            // Redirect the error stream to also the inputStream so we see all output text from the command
+            processBuilder.redirectErrorStream(true);
+
+            Process process;
+            try {
+                process = processBuilder.start();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+                StringBuilder stringBuilder = new StringBuilder();
+                String line;
+
+                int totalLineCounter = 0;
+                int errorCounter = 0;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line + "\n"); // TODO : does this need a newline to make it look pretty?
+                    totalLineCounter++;
+                    if (line.contains("error"))
+                        errorCounter++;
+                }
+
+                process.waitFor();
+                stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
+                stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + totalLineCounter + "\n");
+                stringBuilder.append(Math.round(errorCounter / totalLineCounter) + "% Errors");
+
+                // Do something with the string, like save it to a text file or something. 
+                System.out.println(stringBuilder.toString());
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Failed to start Process in backupData");
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+                System.out.println("Interrupted During Out/In/Error stream reading");
+            }
+
+
 
 
         }
