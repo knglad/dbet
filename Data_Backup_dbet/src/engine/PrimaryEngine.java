@@ -23,7 +23,7 @@ public class PrimaryEngine {
 	 */
 
 			// NOTE: macVolumes must be the absolute path to EACH PARTITIONS ROOT!! Breaks otherwise and doesn't know what to do.
-	private String[] macVolumes = {"/Volumes/Storage/", "/Volumes/Storage2/"};//, "/Volumes/Storage3/"};
+	private String[] macVolumes = {"/Volumes/Storage/", "/Volumes/Storage2/", "/Volumes/Storage3/"};
 	private String[] windowsVolumes = {"F:/CustBackup/"};
 
 
@@ -94,10 +94,10 @@ public class PrimaryEngine {
 			}
 		}
 
-		if (highest.getName().equals("Storage")) // TODO BUG WORKAROUND: Sun bug where getRuntime().exec() can't handle "\\ "
+		if (highest.getName().equals("Storage")) { // TODO BUG WORKAROUND: Sun bug where getRuntime().exec() can't handle "\\ "
 			// Had to rename folder without spaces, works fine otherwise.
 			highest.mountPoint = highest.mountPoint + "/customer_backup/";
-
+		}
 		return highest;
 	}
 

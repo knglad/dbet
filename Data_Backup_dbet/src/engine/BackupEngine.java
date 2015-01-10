@@ -202,8 +202,6 @@ public class BackupEngine {
             for (String fileName : findImportantFiles(drive.getFile().listFiles())) {
                 String fullPathFile = drive.getFile().getPath() + "/" + fileName;
                 fullPathFilesList.add(fullPathFile);
-
-                System.out.println(fullPathFile);
             }
 
             backupCommand.addAll(fullPathFilesList);
@@ -225,13 +223,15 @@ public class BackupEngine {
                             "Potential users: " + users,
                     "Make Directory", JOptionPane.QUESTION_MESSAGE);
 
-            // replace spaces in the mkdir with "\ "
 
             // TODO WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
+            // replace spaces in the mkdir with "\ "
             //mkdir = mkdir.replace(" ", "\\ ");
 
             // Get exact path to the destination folder
-            mkdir = primaryEngine.getHighestStorageDrive().getMountPoint() + mkdir + "/";
+            mkdir = primaryEngine.getHighestStorageDrive().getMountPoint() + "/" + mkdir + "/";
+            // TODO BUG WORKAROUND Storage3 would lose its '/' after its name.
+            mkdir = mkdir.replace("//", "/");
 
             // Which drive do we want to backup to?
             // Add the Destination folder to the command
@@ -256,6 +256,12 @@ public class BackupEngine {
                 ioe.printStackTrace();
                 System.out.println("Could not reach destination folder to create directory.");
             }
+
+
+            for (String s : finalCommand) {
+                System.out.println(s);
+            }
+            System.out.println("\n");
 
 
             // Now actually back it up.
