@@ -1,5 +1,6 @@
 package engine;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -67,9 +68,64 @@ public class DriveUtils {
         return drive;
     }
 
+    public String getUsers(Drive drive) {
+        String users = "";
+        try {
+            File getUsers = new File(drive.getMountPoint() + "/Users/");
+            File[] allUsers = getUsers.listFiles();
+            int counter = 0;
+            for (File f : allUsers) {
+
+                /*
+                    Filter the Users folders, if it passes all the filters it is added in a single logic tree
+                 */
+
+                if (f.getName().toCharArray()[0] == '.') {
+
+                } else if (f.getName().equals("")) {
+
+                } else if (counter == 0) {
+                    users += f.getName();
+                    counter++;
+                } else {
+                    users += "\n" + f.getName();
+                }
+            }
+        } catch (NullPointerException npe) {
+            users = "No Users Detected";
+        }
+
+        return users;
+
+    }
 
     public String getOS() {
         return OS;
+    }
+
+
+    /**
+     * @param message      -- what to tell the user
+     * @param parentWindow -- JFrame to make the JOptionPane happy
+     * @return boolean, true means the user said YES to your request, false means NO and closing the option pane closes
+     * the program (to avoid flooding).
+     */
+    public boolean askUserYesNo(String message, JFrame parentWindow) {
+        int n = JOptionPane.showConfirmDialog(parentWindow, message, "", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
+
+        // 0 is YES
+        if (n == 0)
+            return true;
+        // 1 is NO...not entirely sure why.
+        if (n == 1)
+            return false;
+        if (n == -1) {
+            System.out.println("Closing DBET per user, no further drives will be backed up.");
+            System.exit(0);
+        }
+
+        return false;
+
     }
 
 }

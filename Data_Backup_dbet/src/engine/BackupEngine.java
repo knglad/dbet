@@ -140,7 +140,7 @@ public class BackupEngine {
                 if (du.getOS().contains("Mac"))
                     fileName = file.getName();
                 else if (du.getOS().contains("Windows"))
-                    fileName = file.getPath();
+                    fileName = file.getPath(); // Name could be "" or some random string, path for windows gave the proper name.
 
                 int n = JOptionPane.showOptionDialog(parentWindow,
                         "Would you like to backup files from " + fileName + "?  (" + counter + " / " + listToAsk.size() + ")",
@@ -208,31 +208,30 @@ public class BackupEngine {
 
 
             // Create the destination folder
-            String users = "";
-            try {
-                File getUsers = new File(drive.getMountPoint() + "/Users/");
-                File[] allUsers = getUsers.listFiles();
-                int counter = 0;
-                for (File f : allUsers) {
-                    if (f.getName().toCharArray()[0] == '.') {
-                    } else if (f.getName().equals("")) {
-                    } else if (counter == 0) {
-                        users += f.getName();
-                        counter++;
-                    } else {
-                        users += "\n" + f.getName();
-                    }
-                }
-            } catch (NullPointerException npe) {
-                users = "No Users Detected";
-            }
+            String users = du.getUsers(drive);
 
 
             String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
                             "Potential users:\n" + users,
                     "Make Directory", JOptionPane.QUESTION_MESSAGE);
 
+            if (mkdir == null) {
+                boolean response = du.askUserYesNo("No input was detected for the directory, do you wish to proceed?", parentWindow);
 
+                if (!response)
+                    break; // Don't backup this drive, move on.
+                if (response) {
+                    mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
+                                    "Potential users:\n" + users,
+                            "Make Directory", JOptionPane.QUESTION_MESSAGE);
+                }
+
+                if (mkdir == null)
+                    mkdir = "RENAME THIS FOLDER!_" + drive.toString(); // Without this DBET will replace the last made RENAME THIS FOLDER! with the
+                // current one, losing data. The drive.toString();
+
+
+            }
             // TODO WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
             // replace spaces in the mkdir with "\ "
             //mkdir = mkdir.replace(" ", "\\ ");
