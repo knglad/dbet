@@ -211,16 +211,25 @@ public class BackupEngine {
             String users = "";
             try {
                 File getUsers = new File(drive.getMountPoint() + "/Users/");
-                for (File f : getUsers.listFiles()) {
-                    users += ", " + f.getName();
+                File[] allUsers = getUsers.listFiles();
+                int counter = 0;
+                for (File f : allUsers) {
+                    if (f.getName().toCharArray()[0] == '.') {
+                    } else if (f.getName().equals("")) {
+                    } else if (counter == 0) {
+                        users += f.getName();
+                        counter++;
+                    } else {
+                        users += "\n" + f.getName();
+                    }
                 }
             } catch (NullPointerException npe) {
                 users = "No Users Detected";
             }
 
 
-            String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021) \n" +
-                            "Potential users: " + users,
+            String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
+                            "Potential users:\n" + users,
                     "Make Directory", JOptionPane.QUESTION_MESSAGE);
 
 
@@ -288,8 +297,10 @@ public class BackupEngine {
                     totalLineCounter++;
                     if (line.contains("error"))
                         errorCounter++;
-                    else if (line.contains("usage:"))
+                    else if (line.contains("usage:")) {
                         errorCounter++;
+                        System.out.println("\"cp\" command failed to start.");
+                    }
                 }
 
                 process.waitFor();
