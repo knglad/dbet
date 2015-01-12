@@ -62,7 +62,7 @@ public class BackupEngine {
         // If something was added to dd, save the list now.
         if (shouldSaveDisregardDrives) {
             dd.saveList();
-            shouldSaveDisregardDrives = false; // TODO  WATCH This flag might not be needed, remove for performance once tested.
+            shouldSaveDisregardDrives = false; // WATCH This flag might not be needed, remove for performance once tested.
         }
         // Determine best method to back them up
         // Back them up
@@ -226,22 +226,30 @@ public class BackupEngine {
                             "Make Directory", JOptionPane.QUESTION_MESSAGE);
                 }
 
+                // Asked again, they obviously WANT to backup this drive just didn't input a name or closed the box.
+                // Best thing to do is back it up for them, and just have them rename the folder by hand later.
                 if (mkdir == null)
-                    mkdir = "RENAME THIS FOLDER!_" + drive.toString(); // Without this DBET will replace the last made RENAME THIS FOLDER! with the
-                // current one, losing data. The drive.toString();
+                    mkdir = "RENAME THIS FOLDER!_" + drive.toString();
+                    /*
+                    Without this DBET will replace the last made RENAME THIS FOLDER! with the
+                    current one, losing data. The drive.toString();
+                    */
+
+            } // End of mkdir == null (the first time)
 
 
-            }
-            // TODO WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
+            // WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
             // replace spaces in the mkdir with "\ "
             //mkdir = mkdir.replace(" ", "\\ ");
 
-            // Get exact path to the destination folder
+
+            // Get exact path to the destination folder, find the best storage option and use that.
             mkdir = du.getHighestStorageDrive(pe.getDriveList()).getMountPoint() + "/" + mkdir + "/";
-            // TODO BUG WORKAROUND Storage3 would lose its '/' after its name.
+
+            // BUG WORKAROUND Storage3 would lose its '/' after its name.
             mkdir = mkdir.replace("//", "/");
 
-            // Which drive do we want to backup to?
+
             // Add the Destination folder to the command
             backupCommand.add(mkdir);
 

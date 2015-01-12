@@ -43,7 +43,7 @@ public class DriveUtils {
             }
         }
 
-        if (highest.getName().equals("Storage")) { // TODO BUG WORKAROUND: Sun bug where getRuntime().exec() can't handle "\\ "
+        if (highest.getName().equals("Storage")) { // BUG WORKAROUND: Sun bug where getRuntime().exec() can't handle "\\ "
             // Had to rename folder without spaces, works fine otherwise.
             highest.mountPoint = highest.getMountPoint() + "/customer_backup/";
         }
