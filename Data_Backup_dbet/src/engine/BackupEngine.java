@@ -245,9 +245,6 @@ public class BackupEngine {
             }
 
 
-            // the command has been built lets make it into an array
-            String[] finalCommand = backupCommand.toArray(new String[backupCommand.size()]);
-
             // Make the directory actually exist so we can back up to it
             String[] makeDirectoryCommand = new String[]{"mkdir", mkdir};
             try {
@@ -257,6 +254,9 @@ public class BackupEngine {
                 System.out.println("Could not reach destination folder to create directory.");
             }
 
+
+            // the command has been built lets make it into an array
+            String[] finalCommand = backupCommand.toArray(new String[backupCommand.size()]);
 
             for (String s : finalCommand) {
                 System.out.println(s);
@@ -268,7 +268,7 @@ public class BackupEngine {
             // Pump the output to the GUI, which the GUI will save the output into a log file for later examination.
 
             // Takes a List<String> in the constructor or just a string
-            ProcessBuilder processBuilder = new ProcessBuilder(backupCommand);
+            ProcessBuilder processBuilder = new ProcessBuilder(finalCommand);
             // Redirect the error stream to also the inputStream so we see all output text from the command
             processBuilder.redirectErrorStream(true);
 
@@ -287,6 +287,8 @@ public class BackupEngine {
                     stringBuilder.append(line + "\n");
                     totalLineCounter++;
                     if (line.contains("error"))
+                        errorCounter++;
+                    else if (line.contains("usage:"))
                         errorCounter++;
                 }
 
