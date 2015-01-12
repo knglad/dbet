@@ -313,7 +313,7 @@ public class BackupEngine {
                 process.waitFor();
                 stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
                 stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + totalLineCounter);
-                stringBuilder.append(" " + Math.round(errorCounter / totalLineCounter) + "%");
+                stringBuilder.append("\n Percent Error: " + Math.round(errorCounter / totalLineCounter) + "%");
 
                 // Do something with the string, like save it to a text file or something. 
                 System.out.println(stringBuilder.toString());
