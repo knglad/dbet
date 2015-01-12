@@ -15,10 +15,11 @@ import java.util.ArrayList;
 public class PrimaryEngine {
 
 
-	public String OS; // The Operating System type we are working with
+
     private ArrayList<Drive> rawDrives = new ArrayList<Drive>(); // Arraylists make themselves bigger if need be, automatically.
     private boolean listMadeSuccessfully = false;
-    /**
+	private DriveUtils du = new DriveUtils();
+	/**
 	 * MANUAL HARD CODED DRIVE STRINGS ARE HERE! EDIT IF MOUNT POINTS OR NAMES CHANGE!!!!!!!! TODO WATCH Ensure this is updated
 	 */
 
@@ -30,11 +31,11 @@ public class PrimaryEngine {
 
     public PrimaryEngine(){
 		// Determine which OS we are working with
-		OS = System.getProperty("os.name");
 
-        if ( OS.equals("Mac OS X") ){
+
+		if (du.getOS().equals("Mac OS X")) {
 		listMadeSuccessfully =  makeDriveList(macVolumes);
-		} else if (OS.contains("Windows")) {
+		} else if (du.getOS().contains("Windows")) {
 		 listMadeSuccessfully = makeDriveList(windowsVolumes);
 	 }
 
@@ -56,7 +57,7 @@ public class PrimaryEngine {
 
 			if (f.getTotalSpace() != 0.0) // pointless if it doesn't exist.
 				// add this newly created file to the list, the next available position.
-				rawDrives.add(mountPointToDrive(f));
+				rawDrives.add(du.mountPointToDrive(f));
 
 		}
 		
@@ -67,47 +68,13 @@ public class PrimaryEngine {
 	}
 
 
-	/**
-	 * @param file -- when given a file creates a Drive object so we can auto calculate storage and avoid IO errors
-	 * @return The converted Drive object
-	 * <p/>
-	 * When we have the file but want to use the Drive object
-	 */
-	public Drive mountPointToDrive(File file) {
-		String name = file.getName(); // /path/to/file/ThisIsTheName
-		String path = file.getAbsolutePath();
-		double capac = byteToGigabyte(file.getTotalSpace());
-		double free = byteToGigabyte(file.getFreeSpace());
-		double used = capac - free;
-		String fileSystem = OS;
 
-		Drive drive = new Drive(name, path, capac, free, used, fileSystem, file);
-		return drive;
-	}
 
-	public Drive getHighestStorageDrive() {
-		Drive highest = rawDrives.get(0);
 
-		for (int i = 1; i < rawDrives.size(); i++) { // i = 1 because highest starts out as the first drive.
-			if (rawDrives.get(i).freeCapacity > highest.freeCapacity) {
-				highest = rawDrives.get(i);
-			}
-		}
-
-		if (highest.getName().equals("Storage")) { // TODO BUG WORKAROUND: Sun bug where getRuntime().exec() can't handle "\\ "
-			// Had to rename folder without spaces, works fine otherwise.
-			highest.mountPoint = highest.mountPoint + "/customer_backup/";
-		}
-		return highest;
-	}
 
 
 	//////// GETTERS AND SETTERS //////////////////////////////
-	
-	public String getOS(){
-		return OS;
-	}
-	
+
 	public boolean isListMade(){
 		return listMadeSuccessfully;
 	}
@@ -116,17 +83,7 @@ public class PrimaryEngine {
 		return rawDrives;
 	}
 
-	public float byteToGigabyte(float num) {
 
-		int divisor = 1000; // definition of when to change names in byte size kilo -> mega etc
-		// On Mac OS X, 1000 is the appropriate one.
-
-		//TODO :: Test divisor on Windows to see if they use 1024 instead
-
-		float giga = (((num / divisor) / divisor) / divisor);
-
-		return giga;
-	}
 	
 	
 } // END OF PRIMARY ENGINE

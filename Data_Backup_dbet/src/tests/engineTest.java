@@ -1,5 +1,6 @@
 package tests;
 
+import engine.DriveUtils;
 import engine.PrimaryEngine;
 import org.junit.Test;
 
@@ -10,14 +11,15 @@ public class engineTest {
 	
         @Test
 	public void PrimaryEngineTest(){
-		PrimaryEngine pe = new PrimaryEngine();
+            PrimaryEngine pe = new PrimaryEngine();
+            DriveUtils du = new DriveUtils();
 
-            System.out.println(pe.getOS());
+            System.out.println(du.getOS());
 
             // Test to ensure the list is populating in engine
             assertTrue(pe.isListMade());
 
-            if (pe.getOS().contains("Mac")) {
+            if (du.getOS().contains("Mac")) {
                 // Test to see how many drives are in the array list
                 assertEquals(3, pe.getDriveList().size());
                 assertEquals("/Volumes/Storage", pe.getDriveList().get(0).getMountPoint()); // It knows its a folder, drops the last '/'

@@ -1,7 +1,6 @@
 package tests;
 
 import engine.BackupEngine;
-import engine.PrimaryEngine;
 import org.junit.Test;
 
 import javax.swing.*;
@@ -20,10 +19,9 @@ public class backupEngineTest {
 
     @Test
     public void testDrivesForBackup() {
-        PrimaryEngine pe = new PrimaryEngine();
         JFrame jFrame = new JFrame();
 
-        BackupEngine backupEngine = new BackupEngine(pe, jFrame);
+        BackupEngine backupEngine = new BackupEngine(jFrame);
 
         // Mac tested for proper filtering of unwanted drives. PASSED
         // Windows tested for proper filtering of unwanted drives. PASSED

@@ -23,23 +23,23 @@ public class BackupEngine {
 
     public String OS;
     public DisregardDrives dd;
-    public PrimaryEngine primaryEngine;
     public JFrame parentWindow;
     public boolean shouldSaveDisregardDrives = false;
     public StringBuilder log;
+    private DriveUtils du;
+    private PrimaryEngine pe;
 
     /**
-     * @param pe     - Allows data transfer with the central object, and access to useful methods
      * @param window - Allows sending of signals to the window and its graphical components
      */
 
-    public BackupEngine(PrimaryEngine pe, JFrame window) { // THIS IS THE BIG KAHUNA! The whole algo is this constructor.
-
-        primaryEngine = pe;
+    public BackupEngine(JFrame window) { // THIS IS THE BIG KAHUNA! The whole algo is this constructor.
         parentWindow = window;
+        du = new DriveUtils();
+        pe = new PrimaryEngine();
 
         // OS determines where to look for newly mounted drives we may want to backup
-        OS = primaryEngine.getOS();
+        OS = du.getOS();
 
         // Drives we KNOW we don't want to backup, as users use the program it will learn what it shouldn't look for.
         dd = new DisregardDrives();
@@ -137,9 +137,9 @@ public class BackupEngine {
             JOptionPane.showMessageDialog(parentWindow, "No Drives were found that were able to be backed up.");
         } else {
             for (File file : listToAsk) {
-                if (primaryEngine.getOS().contains("Mac"))
+                if (du.getOS().contains("Mac"))
                     fileName = file.getName();
-                else if (primaryEngine.getOS().contains("Windows"))
+                else if (du.getOS().contains("Windows"))
                     fileName = file.getPath();
 
                 int n = JOptionPane.showOptionDialog(parentWindow,
@@ -157,7 +157,7 @@ public class BackupEngine {
                 if (n == -1) // Early Cancellation of program (avoids situations where theres HUGE amounts of drives
                     System.exit(0);
                 if (n == 0) // BACKUP THE DRIVE
-                    drivesToBackup.add(primaryEngine.mountPointToDrive(file));
+                    drivesToBackup.add(du.mountPointToDrive(file));
                 if (n == 2) { // Never backup this drive!
                     dd.addWithoutDuplicates(file.getName());
                     shouldSaveDisregardDrives = true; // Tells the program to save the new DD as something was added
@@ -193,7 +193,7 @@ public class BackupEngine {
             ArrayList<String> backupCommand = new ArrayList<String>();
             backupCommand.add("cp");
 
-            if (primaryEngine.getOS().contains("Mac")) {
+            if (du.getOS().contains("Mac")) {
                 backupCommand.add("-Rv");
             }
 
@@ -238,7 +238,7 @@ public class BackupEngine {
             //mkdir = mkdir.replace(" ", "\\ ");
 
             // Get exact path to the destination folder
-            mkdir = primaryEngine.getHighestStorageDrive().getMountPoint() + "/" + mkdir + "/";
+            mkdir = du.getHighestStorageDrive(pe.getDriveList()).getMountPoint() + "/" + mkdir + "/";
             // TODO BUG WORKAROUND Storage3 would lose its '/' after its name.
             mkdir = mkdir.replace("//", "/");
 
@@ -248,7 +248,7 @@ public class BackupEngine {
 
 
             // Powershell uses '-recurse' after the command to handle folders and -verbose to get the data
-            if (primaryEngine.getOS().contains("Windows")) {
+            if (du.getOS().contains("Windows")) {
                 backupCommand.add("-recurse");
                 backupCommand.add("-verbose");
             }
