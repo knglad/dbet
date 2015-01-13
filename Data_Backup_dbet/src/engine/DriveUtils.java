@@ -57,14 +57,26 @@ public class DriveUtils {
      * When we have the file but want to use the Drive object
      */
     public Drive mountPointToDrive(File file) {
+
+        if (OS.contains("Windows")) {
+            char[] name = file.getPath().toCharArray();
+            String mountPoint = "";
+            for (int i = 0; i < name.length; i++) {
+                if (name[i] == ':') {
+                    mountPoint = String.valueOf(name[i - 1]) + ":";
+                    break;
+                }
+            }
+            file = new File(mountPoint);
+        }
         String name = file.getName(); // /path/to/file/ThisIsTheName
         String path = file.getAbsolutePath();
         double capac = byteToGigabyte(file.getTotalSpace());
         double free = byteToGigabyte(file.getFreeSpace());
         double used = capac - free;
-        String fileSystem = OS;
 
-        Drive drive = new Drive(name, path, capac, free, used, fileSystem, file);
+
+        Drive drive = new Drive(name, path, capac, free, used, OS, file);
         return drive;
     }
 

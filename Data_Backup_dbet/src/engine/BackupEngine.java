@@ -191,16 +191,16 @@ public class BackupEngine {
 
             // Use ArrayList to avoid extra spaces and keep array size to a minimum
             ArrayList<String> backupCommand = new ArrayList<String>();
+
             backupCommand.add("cp");
+            backupCommand.add("-Rv");
 
-            if (du.getOS().contains("Mac")) {
-                backupCommand.add("-Rv");
-            }
 
-            ArrayList<String> fullPathFilesList = new ArrayList<String>();
             // Find all the folders we want to backup from the drive
+            ArrayList<String> fullPathFilesList = new ArrayList<String>();
+
             for (String fileName : findImportantFiles(drive.getFile().listFiles())) {
-                String fullPathFile = drive.getFile().getPath() + "/" + fileName;
+                String fullPathFile = drive.getFile().getPath() + File.separator + fileName;
                 fullPathFilesList.add(fullPathFile);
             }
 
@@ -244,7 +244,7 @@ public class BackupEngine {
 
 
             // Get exact path to the destination folder, find the best storage option and use that.
-            mkdir = du.getHighestStorageDrive(pe.getDriveList()).getMountPoint() + "/" + mkdir + "/";
+            mkdir = du.getHighestStorageDrive(pe.getDriveList()).getMountPoint() + File.separator + mkdir + File.separator;
 
             // BUG WORKAROUND Storage3 would lose its '/' after its name.
             mkdir = mkdir.replace("//", "/");
@@ -252,13 +252,6 @@ public class BackupEngine {
 
             // Add the Destination folder to the command
             backupCommand.add(mkdir);
-
-
-            // Powershell uses '-recurse' after the command to handle folders and -verbose to get the data
-            if (du.getOS().contains("Windows")) {
-                backupCommand.add("-recurse");
-                backupCommand.add("-verbose");
-            }
 
 
             // Make the directory actually exist so we can back up to it
@@ -270,61 +263,30 @@ public class BackupEngine {
                 System.out.println("Could not reach destination folder to create directory.");
             }
 
+            if (du.getOS().contains("Windows")) { // Thanks Powershell..for not doing multiple files in one command
+                // We've made the directory, now we need to do the backup.
+                for (String fileToBackup : fullPathFilesList) {
+                    // Create the command
+                    ArrayList<String> windowsCommand = new ArrayList<String>();
+                    windowsCommand.add("powershell.exe");
+                    windowsCommand.add("/C");
+                    windowsCommand.add("cp");
+                    windowsCommand.add(fileToBackup); // total path to the file / folder
+                    windowsCommand.add(mkdir); // total path to the destination
+                    windowsCommand.add("-recurse");
+                    windowsCommand.add("-verbose");
 
-            // the command has been built lets make it into an array
-            String[] finalCommand = backupCommand.toArray(new String[backupCommand.size()]);
-
-            for (String s : finalCommand) {
-                System.out.println(s);
-            }
-            System.out.println("\n");
-
-
-            // Now actually back it up.
-            // Pump the output to the GUI, which the GUI will save the output into a log file for later examination.
-
-            // Takes a List<String> in the constructor or just a string
-            ProcessBuilder processBuilder = new ProcessBuilder(finalCommand);
-            // Redirect the error stream to also the inputStream so we see all output text from the command
-            processBuilder.redirectErrorStream(true);
-
-            Process process;
-            try {
-                process = processBuilder.start();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-                StringBuilder stringBuilder = new StringBuilder();
-                String line; // Something to hold the current string so it can be saved and checked
-
-                // Statistics to help determine if the backup worked or not.
-                int totalLineCounter = 0;
-                int errorCounter = 0;
-                while ((line = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(line + "\n");
-                    totalLineCounter++;
-                    if (line.contains("error"))
-                        errorCounter++;
-                    else if (line.contains("usage:")) {
-                        errorCounter++;
-                        System.out.println("\"cp\" command failed to start.");
-                    }
+                    String[] finalWindowsCommand = windowsCommand.toArray(new String[windowsCommand.size()]);
+                    runCommand(finalWindowsCommand);
                 }
+            } else { // Its a MAC so do what you'd normally do.
 
-                process.waitFor();
-                stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
-                stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + totalLineCounter);
-                stringBuilder.append("\n Percent Error: " + Math.round(errorCounter / totalLineCounter) + "%");
+                // the command has been built lets make it into an array
+                String[] finalCommand = backupCommand.toArray(new String[backupCommand.size()]);
 
-                // Do something with the string, like save it to a text file or something. 
-                System.out.println(stringBuilder.toString());
+                // Now actually back it up.
+                runCommand(finalCommand);
 
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Failed to start Process in backupData");
-            } catch (InterruptedException ie) {
-                ie.printStackTrace();
-                System.out.println("Interrupted During Out/In/Error stream reading");
             }
         }
     }
@@ -344,6 +306,7 @@ public class BackupEngine {
                 "Incompatible Software",
         };
 
+
         for (File f : files) {
             for (String s : foldersAndFilesWeDontWant) {
                 if (f.getName().toLowerCase().contains(s.toLowerCase())) {
@@ -362,5 +325,53 @@ public class BackupEngine {
         }
 
         return filesWeWantSaved;
+    }
+
+
+    public void runCommand(String[] command) {
+
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        // Redirect the error stream to also the inputStream so we see all output text from the command
+        processBuilder.redirectErrorStream(true);
+
+        Process process;
+        try {
+            process = processBuilder.start();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            StringBuilder stringBuilder = new StringBuilder();
+            String line; // Something to hold the current string so it can be saved and checked
+
+            // Statistics to help determine if the backup worked or not.
+            int totalLineCounter = 0;
+            int errorCounter = 0;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line + "\n");
+                totalLineCounter++;
+                if (line.contains("error"))
+                    errorCounter++;
+                else if (line.contains("usage:")) {
+                    errorCounter++;
+                    System.out.println("\"cp\" command failed to start.");
+                }
+            }
+
+            process.waitFor();
+            stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
+            stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + totalLineCounter);
+            stringBuilder.append("\n Percent Error: " + Math.round(errorCounter / totalLineCounter) + "%");
+
+            // Do something with the string, like save it to a text file or something.
+            System.out.println(stringBuilder.toString());
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to start Process in backupData");
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
+            System.out.println("Interrupted During Out/In/Error stream reading");
+        }
+
     }
 } // END OF BACKUP ENGINE
