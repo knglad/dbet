@@ -64,4 +64,21 @@ public class backupEngineTest {
             System.out.println(file.getName());
         }
     }
+
+    @Test
+    public void testStringBuilderAppend() {
+        StringBuilder sb = new StringBuilder();
+        String line = "This is a single line that we will use";
+        String two = "THIS IS A SECONDARY LINE THAT WE WILL USE";
+        String three = "third line that we will use as an example";
+        String[] arr = new String[]{line, two, three};
+
+        for (int i = 0; i < 3; i++) {
+            sb.append(line + "\n");
+            sb.append(two + "\n");
+            sb.append(three + "\n");
+            System.out.println(sb.toString());
+
+        }
+    }
 }

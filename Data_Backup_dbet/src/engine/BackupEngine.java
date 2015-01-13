@@ -29,6 +29,10 @@ public class BackupEngine {
     private DriveUtils du;
     private PrimaryEngine pe;
 
+    // Statistical variables
+    private int totalLineCounter;
+    private int errorCounter;
+
     /**
      * @param window - Allows sending of signals to the window and its graphical components
      */
@@ -263,6 +267,11 @@ public class BackupEngine {
                 System.out.println("Could not reach destination folder to create directory.");
             }
 
+            // Reset the statistic counters
+            errorCounter = 0;
+            totalLineCounter = 0;
+
+
             if (du.getOS().contains("Windows")) { // Thanks Powershell..for not doing multiple files in one command
                 // We've made the directory, now we need to do the backup.
                 for (String fileToBackup : fullPathFilesList) {
@@ -288,6 +297,8 @@ public class BackupEngine {
                 runCommand(finalCommand);
 
             }
+            // After its all run we can show the statistics for how it went.
+            showCopyStatistics();
         }
     }
 
@@ -347,6 +358,10 @@ public class BackupEngine {
             int errorCounter = 0;
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuilder.append(line + "\n");
+
+                // outputs the text to the console, DONT OUTPUT STRINGBUILDER AS THAT CAUSES REPEAT OUTPUT
+                System.out.println(line);
+
                 totalLineCounter++;
                 if (line.contains("error"))
                     errorCounter++;
@@ -357,12 +372,8 @@ public class BackupEngine {
             }
 
             process.waitFor();
-            stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
-            stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + totalLineCounter);
-            stringBuilder.append("\n Percent Error: " + Math.round(errorCounter / totalLineCounter) + "%");
 
-            // Do something with the string, like save it to a text file or something.
-            System.out.println(stringBuilder.toString());
+
 
 
         } catch (IOException e) {
@@ -372,6 +383,18 @@ public class BackupEngine {
             ie.printStackTrace();
             System.out.println("Interrupted During Out/In/Error stream reading");
         }
+
+    }
+
+    public void showCopyStatistics() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
+        stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + totalLineCounter);
+        stringBuilder.append("\n Percent Error: " + Math.round(errorCounter / totalLineCounter) + "%");
+
+        // Do something with the string, like save it to a text file or something.
+        System.out.println(stringBuilder.toString());
 
     }
 } // END OF BACKUP ENGINE
