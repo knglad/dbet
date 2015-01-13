@@ -189,7 +189,6 @@ public class BackupEngine {
      *             new thread for each drive it backs up and then closes the thread upon completion of that task.
      */
     public void backupData(ArrayList<Drive> backupThisList, String[]... mode) {
-        // TODO :: Test this with a drive that simulates a drive containing an OS and has a Users folder + Applications Folder
 
         for (Drive drive : backupThisList) {
             // The process runtime uses a string array to handle creating a single command
@@ -198,9 +197,10 @@ public class BackupEngine {
             // Use ArrayList to avoid extra spaces and keep array size to a minimum
             ArrayList<String> backupCommand = new ArrayList<String>();
 
-            backupCommand.add("cp");
-            backupCommand.add("-Rv");
-
+            if (du.getOS().contains("Mac")) {
+                backupCommand.add("cp");
+                backupCommand.add("-Rv");
+            }
 
             // Find all the folders we want to backup from the drive
             ArrayList<String> fullPathFilesList = new ArrayList<String>();
@@ -209,6 +209,7 @@ public class BackupEngine {
                 String fullPathFile = drive.getFile().getPath() + File.separator + fileName;
                 fullPathFilesList.add(fullPathFile);
             }
+
 
             backupCommand.addAll(fullPathFilesList);
 
