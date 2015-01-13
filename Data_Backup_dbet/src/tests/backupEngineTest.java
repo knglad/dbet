@@ -67,6 +67,10 @@ public class backupEngineTest {
 
     @Test
     public void testStringBuilderAppend() {
+
+        // Used to have a stringbuilder hold the output string. Found out it outputted the entirety of itself
+        // everytime, meaning that we could have a thousand lines outputted and then it would output 1001 lines the next
+        // time it was called, reducing overall memory.
         StringBuilder sb = new StringBuilder();
         String line = "This is a single line that we will use";
         String two = "THIS IS A SECONDARY LINE THAT WE WILL USE";

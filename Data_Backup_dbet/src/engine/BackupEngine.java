@@ -32,6 +32,8 @@ public class BackupEngine {
     // Statistical variables
     private int totalLineCounter;
     private int errorCounter;
+    private int preBackupFreeSpace;
+    private int postBackupFreeSpace;
 
     /**
      * @param window - Allows sending of signals to the window and its graphical components
@@ -315,6 +317,19 @@ public class BackupEngine {
                 "Volumes",
                 "Yose Life Image",
                 "Incompatible Software",
+                "private",
+                "sbin",
+                "net",
+                "usr",
+                "var",
+                "tmp",
+                "cores",
+                "bin",
+                "Network",
+                "dev",
+                "etc",
+                "home",
+                "mach_kernel"
         };
 
 
@@ -350,30 +365,27 @@ public class BackupEngine {
             process = processBuilder.start();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-            StringBuilder stringBuilder = new StringBuilder();
             String line; // Something to hold the current string so it can be saved and checked
 
             // Statistics to help determine if the backup worked or not.
             int totalLineCounter = 0;
             int errorCounter = 0;
             while ((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line + "\n");
-
                 // outputs the text to the console, DONT OUTPUT STRINGBUILDER AS THAT CAUSES REPEAT OUTPUT
                 System.out.println(line);
-
                 totalLineCounter++;
+
                 if (line.contains("error"))
                     errorCounter++;
+
                 else if (line.contains("usage:")) {
                     errorCounter++;
                     System.out.println("\"cp\" command failed to start.");
+                } else if (line.contains("Operation not supported")) {
+                    errorCounter++;
                 }
             }
-
             process.waitFor();
-
-
 
 
         } catch (IOException e) {
