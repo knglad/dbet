@@ -54,6 +54,8 @@ public class backupEngineTest {
 
         assertTrue(list.get(1).contains("with"));
         assertTrue(list.get(1).contains("space"));
+
+        assertFalse("users".contains("usr"));
     }
 
     @Test

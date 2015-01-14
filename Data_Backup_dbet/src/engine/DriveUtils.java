@@ -31,7 +31,7 @@ public class DriveUtils {
 
 
     /**
-     * @param rawDrives - ArrayList<Drive>
+     * @param rawDrives - ArrayList<Drive> that is all the current drives as they were PRIOR to backing up.
      * @return the Drive object with the highest freeCapacity
      */
     public Drive getHighestStorageDrive(ArrayList<Drive> rawDrives) {
@@ -53,7 +53,7 @@ public class DriveUtils {
     /**
      * @param file -- when given a file creates a Drive object so we can auto calculate storage and avoid IO errors
      * @return The converted Drive object
-     * <p/>
+     *
      * When we have the file but want to use the Drive object
      */
     public Drive mountPointToDrive(File file) {
@@ -93,10 +93,15 @@ public class DriveUtils {
                  */
 
                 if (f.getName().toCharArray()[0] == '.') {
+                } // '.DS_Store' is not a user
 
-                } else if (f.getName().equals("")) {
+                else if (f.getName().contains("Shared")) {
+                } // Shared is pointless to show
 
-                } else if (counter == 0) {
+                else if (f.getName().equals("")) {
+                } // Had some random empty named folders
+
+                else if (counter == 0) {
                     users += f.getName();
                     counter++;
                 } else {
