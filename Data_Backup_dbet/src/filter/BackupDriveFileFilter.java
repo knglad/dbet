@@ -32,4 +32,18 @@ public class BackupDriveFileFilter extends MasterFilter {
     }
 
 
+    /**
+     * @param data
+     * @return Checks to see if a file contains '.' before the name, such as '.vol' or '.Trashes'
+     */
+    public boolean specialRules(String data) {
+        if (data.toCharArray()[0] == '.')
+            return false;
+        else if (data.contains(".failurerequests"))
+            return false;
+        else
+            return true;
+    }
+
+
 }

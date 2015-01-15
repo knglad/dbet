@@ -43,8 +43,12 @@ public class BackupEngine {
      * @param window - Allows sending of signals to the window and its graphical components
      */
 
-    public BackupEngine(JFrame window) { // THIS IS THE BIG KAHUNA! The whole algo is this constructor.
+    public BackupEngine(JFrame window, boolean... debugMode) { // THIS IS THE BIG KAHUNA! The whole algo is this constructor.
         parentWindow = window;
+
+        if (debugMode.length != 0)
+            DEBUG = debugMode[0];
+
         du = new DriveUtils();
         pe = new PrimaryEngine();
 
@@ -57,6 +61,8 @@ public class BackupEngine {
         // Load in the list of drives to ignore, if it's not found it uses the default.
         dd.loadList();
 
+        if (DEBUG)
+            System.out.println("Debugging has been enabled, no commands will be run!");
         // -----------------------------------------------
         // Find the drives to backup
         ArrayList<File> drivesWeMayWantToBackup;
@@ -194,6 +200,7 @@ public class BackupEngine {
      */
     public void backupData(ArrayList<Drive> backupThisList, String[]... mode) {
 
+
         for (Drive drive : backupThisList) {
             // The process runtime uses a string array to handle creating a single command
             // I.E. String[]{"cp", "-Rv", "pathToBackup", "destination"};
@@ -226,7 +233,7 @@ public class BackupEngine {
                             "Potential users:\n" + users,
                     "Make Directory", JOptionPane.QUESTION_MESSAGE);
 
-            if (DEBUG) { // Don't make the directory if we're just testing, it's annoying.
+
                 if (mkdir == null) {
                     boolean response = du.askUserYesNo("No input was detected for the directory, do you wish to proceed?", parentWindow);
 
@@ -261,7 +268,6 @@ public class BackupEngine {
                 // BUG WORKAROUND Storage3 would lose its '/' after its name.
                 mkdir = mkdir.replace("//", "/");
 
-
                 // Add the Destination folder to the command
                 backupCommand.add(mkdir);
 
@@ -274,12 +280,6 @@ public class BackupEngine {
                     ioe.printStackTrace();
                     System.out.println("Could not reach destination folder to create directory.");
                 }
-
-            }
-
-            // Reset the statistic counters
-            errorCounter = 0;
-            totalLineCounter = 1; // Avoid a zero division, adds extremely minute amount to the statistics.
 
 
             if (du.getOS().contains("Windows")) { // Thanks Powershell..for not doing multiple files in one command
@@ -339,20 +339,6 @@ public class BackupEngine {
 
             if (addToList)
                 filesWeWantSaved.add(f.getName());
-//            for (String s : backupDriveFileFilter) {
-//                if (f.getName().toLowerCase().contains(s.toLowerCase())) {
-//                    addToList = false;
-//                    break; // it wont be anything else, why keep looping?
-//                } else if (f.getName().toCharArray()[0] == '.') { // periods before filenames shouldn't be backed up.
-//                    addToList = false;
-//                    break;
-//                }
-//            }
-//
-//            if (addToList)
-//                filesWeWantSaved.add(f.getName());
-//
-//            addToList = true; // reset flag just in case.
         }
 
         return filesWeWantSaved;
@@ -373,8 +359,8 @@ public class BackupEngine {
             String line; // Something to hold the current string so it can be saved and checked
 
             // Statistics to help determine if the backup worked or not.
-            int totalLineCounter = 0;
-            int errorCounter = 0;
+            totalLineCounter = 1;
+            errorCounter = 0;
             while ((line = bufferedReader.readLine()) != null) {
                 // outputs the text to the console, DONT OUTPUT STRINGBUILDER AS THAT CAUSES REPEAT OUTPUT
                 System.out.println(line);
@@ -406,8 +392,9 @@ public class BackupEngine {
     public void showCopyStatistics() {
         StringBuilder stringBuilder = new StringBuilder();
 
+        stringBuilder.append("\n");
         stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
-        stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + totalLineCounter);
+        stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + (totalLineCounter - 1));
         stringBuilder.append("\n Percent Error: " + Math.round(errorCounter / totalLineCounter) + "%");
 
         // Do something with the string, like save it to a text file or something.

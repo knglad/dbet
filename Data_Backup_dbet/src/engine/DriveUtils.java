@@ -101,6 +101,9 @@ public class DriveUtils {
                 else if (f.getName().equals("")) {
                 } // Had some random empty named folders
 
+                else if (f.getName().equals("Applications")) {
+                } // Applications folder in the Users shouldn't be visible.
+
                 else if (counter == 0) {
                     users += f.getName();
                     counter++;
