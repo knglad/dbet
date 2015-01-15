@@ -1,5 +1,7 @@
 package engine;
 
+import filter.BackupDriveFileFilter;
+
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,11 +23,13 @@ import java.util.Arrays;
  */
 public class BackupEngine {
 
+
     public String OS;
     public DisregardDrives dd;
     public JFrame parentWindow;
     public boolean shouldSaveDisregardDrives = false;
     public StringBuilder log;
+    private boolean DEBUG = false;
     private DriveUtils du;
     private PrimaryEngine pe;
 
@@ -140,7 +144,7 @@ public class BackupEngine {
         String fileName = "";
 
         if (listToAsk.isEmpty()) {
-            JOptionPane.showMessageDialog(parentWindow, "No Drives were found that were able to be backed up.");
+            JOptionPane.showMessageDialog(parentWindow, "No drives were found that were able to be backed up.");
         } else {
             for (File file : listToAsk) {
                 if (du.getOS().contains("Mac"))
@@ -222,57 +226,60 @@ public class BackupEngine {
                             "Potential users:\n" + users,
                     "Make Directory", JOptionPane.QUESTION_MESSAGE);
 
-            if (mkdir == null) {
-                boolean response = du.askUserYesNo("No input was detected for the directory, do you wish to proceed?", parentWindow);
+            if (DEBUG) { // Don't make the directory if we're just testing, it's annoying.
+                if (mkdir == null) {
+                    boolean response = du.askUserYesNo("No input was detected for the directory, do you wish to proceed?", parentWindow);
 
-                if (!response)
-                    break; // Don't backup this drive, move on.
-                if (response) {
-                    mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
-                                    "Potential users:\n" + users,
-                            "Make Directory", JOptionPane.QUESTION_MESSAGE);
-                }
+                    if (!response)
+                        break; // Don't backup this drive, move on.
+                    if (response) {
+                        mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
+                                        "Potential users:\n" + users,
+                                "Make Directory", JOptionPane.QUESTION_MESSAGE);
+                    }
 
-                // Asked again, they obviously WANT to backup this drive just didn't input a name or closed the box.
-                // Best thing to do is back it up for them, and just have them rename the folder by hand later.
-                if (mkdir == null)
-                    mkdir = "RENAME THIS FOLDER!_" + drive.toString();
+                    // Asked again, they obviously WANT to backup this drive just didn't input a name or closed the box.
+                    // Best thing to do is back it up for them, and just have them rename the folder by hand later.
+                    if (mkdir == null)
+                        mkdir = "RENAME THIS FOLDER!_" + drive.toString();
                     /*
                     Without this DBET will replace the last made RENAME THIS FOLDER! with the
                     current one, losing data. The drive.toString();
                     */
 
-            } // End of mkdir == null (the first time)
+                } // End of mkdir == null (the first time)
 
 
-            // WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
-            // replace spaces in the mkdir with "\ "
-            //mkdir = mkdir.replace(" ", "\\ ");
+                // WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
+                // replace spaces in the mkdir with "\ "
+                //mkdir = mkdir.replace(" ", "\\ ");
 
 
-            // Get exact path to the destination folder, find the best storage option and use that.
-            mkdir = du.getHighestStorageDrive(pe.getDriveList()).getMountPoint() + File.separator + mkdir + File.separator;
+                // Get exact path to the destination folder, find the best storage option and use that.
+                mkdir = du.getHighestStorageDrive(pe.getDriveList()).getMountPoint() + File.separator + mkdir + File.separator;
 
-            // BUG WORKAROUND Storage3 would lose its '/' after its name.
-            mkdir = mkdir.replace("//", "/");
-
-
-            // Add the Destination folder to the command
-            backupCommand.add(mkdir);
+                // BUG WORKAROUND Storage3 would lose its '/' after its name.
+                mkdir = mkdir.replace("//", "/");
 
 
-            // Make the directory actually exist so we can back up to it
-            String[] makeDirectoryCommand = new String[]{"mkdir", mkdir};
-            try {
-                Process p = Runtime.getRuntime().exec(makeDirectoryCommand);
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-                System.out.println("Could not reach destination folder to create directory.");
+                // Add the Destination folder to the command
+                backupCommand.add(mkdir);
+
+
+                // Make the directory actually exist so we can back up to it
+                String[] makeDirectoryCommand = new String[]{"mkdir", mkdir};
+                try {
+                    Process p = Runtime.getRuntime().exec(makeDirectoryCommand);
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                    System.out.println("Could not reach destination folder to create directory.");
+                }
+
             }
 
             // Reset the statistic counters
             errorCounter = 0;
-            totalLineCounter = 0;
+            totalLineCounter = 1; // Avoid a zero division, adds extremely minute amount to the statistics.
 
 
             if (du.getOS().contains("Windows")) { // Thanks Powershell..for not doing multiple files in one command
@@ -289,16 +296,28 @@ public class BackupEngine {
                     windowsCommand.add("-verbose");
 
                     String[] finalWindowsCommand = windowsCommand.toArray(new String[windowsCommand.size()]);
-                    runCommand(finalWindowsCommand);
+                    if (DEBUG) {
+                        for (int i = 0; i < finalWindowsCommand.length; i++) {
+                            String s = finalWindowsCommand[i];
+                            System.out.println(s);
+                        }
+                    } else
+                        runCommand(finalWindowsCommand);
                 }
             } else { // Its a MAC so do what you'd normally do.
 
                 // the command has been built lets make it into an array
                 String[] finalCommand = backupCommand.toArray(new String[backupCommand.size()]);
 
-                // Now actually back it up.
-                runCommand(finalCommand);
-
+                if (DEBUG) {
+                    for (int i = 0; i < finalCommand.length; i++) {
+                        String s = finalCommand[i];
+                        System.out.println(s);
+                    }
+                } else {
+                    // Now actually back it up.
+                    runCommand(finalCommand);
+                }
             }
             // After its all run we can show the statistics for how it went.
             showCopyStatistics();
@@ -312,43 +331,28 @@ public class BackupEngine {
         boolean addToList = true;
         // Contains both Mac and PC files in the root folders of most drives that
         // are system and we don't need to save.
-        String[] foldersAndFilesWeDontWant = new String[]{
-                "Library",
-                "System",
-                "Volumes",
-                "Yose Life Image",
-                "Incompatible Software",
-                "private",
-                "sbin",
-                "net",
-                "usr",
-                "var",
-                "tmp",
-                "cores",
-                "bin",
-                "Network",
-                "dev",
-                "etc",
-                "home",
-                "mach_kernel"
-        };
 
+        BackupDriveFileFilter backupDriveFileFilter = new BackupDriveFileFilter();
 
         for (File f : files) {
-            for (String s : foldersAndFilesWeDontWant) {
-                if (f.getName().toLowerCase().contains(s.toLowerCase())) {
-                    addToList = false;
-                    break; // it wont be anything else, why keep looping?
-                } else if (f.getName().toCharArray()[0] == '.') { // periods before filenames shouldn't be backed up.
-                    addToList = false;
-                    break;
-                }
-            }
+            addToList = backupDriveFileFilter.filterSelection(f.getName());
 
             if (addToList)
                 filesWeWantSaved.add(f.getName());
-
-            addToList = true; // reset flag just in case.
+//            for (String s : backupDriveFileFilter) {
+//                if (f.getName().toLowerCase().contains(s.toLowerCase())) {
+//                    addToList = false;
+//                    break; // it wont be anything else, why keep looping?
+//                } else if (f.getName().toCharArray()[0] == '.') { // periods before filenames shouldn't be backed up.
+//                    addToList = false;
+//                    break;
+//                }
+//            }
+//
+//            if (addToList)
+//                filesWeWantSaved.add(f.getName());
+//
+//            addToList = true; // reset flag just in case.
         }
 
         return filesWeWantSaved;
