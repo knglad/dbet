@@ -36,8 +36,8 @@ public class BackupEngine {
     // Statistical variables
     private int totalLineCounter;
     private int errorCounter;
-    private int preBackupFreeSpace;
-    private int postBackupFreeSpace;
+    private double preBackupFreeSpace;
+    private double postBackupFreeSpace;
 
     /**
      * @param window - Allows sending of signals to the window and its graphical components
@@ -263,7 +263,12 @@ public class BackupEngine {
 
 
                 // Get exact path to the destination folder, find the best storage option and use that.
-                mkdir = du.getHighestStorageDrive(pe.getDriveList()).getMountPoint() + File.separator + mkdir + File.separator;
+
+            // This drive object will help us know about the total amount backed up.
+            Drive currentHighestStorageDrive = du.getHighestStorageDrive(pe.getDriveList());
+            preBackupFreeSpace = currentHighestStorageDrive.getCapacity("free");
+
+            mkdir = currentHighestStorageDrive.getMountPoint() + File.separator + mkdir + File.separator;
 
                 // BUG WORKAROUND Storage3 would lose its '/' after its name.
                 mkdir = mkdir.replace("//", "/");
@@ -320,7 +325,7 @@ public class BackupEngine {
                 }
             }
             // After its all run we can show the statistics for how it went.
-            showCopyStatistics();
+            showCopyStatistics(currentHighestStorageDrive);
         }
     }
 
@@ -389,13 +394,16 @@ public class BackupEngine {
 
     }
 
-    public void showCopyStatistics() {
+    public void showCopyStatistics(Drive justForStatsDrive) {
         StringBuilder stringBuilder = new StringBuilder();
+        postBackupFreeSpace = du.byteToGigabyte(justForStatsDrive.getFile().getFreeSpace());
+
 
         stringBuilder.append("\n");
         stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
         stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + (totalLineCounter - 1));
-        stringBuilder.append("\n Percent Error: " + Math.round(errorCounter / totalLineCounter) + "%");
+        stringBuilder.append("\n Percent Error: " + (float) Math.round(errorCounter / totalLineCounter) + "%");
+        stringBuilder.append("\n Total Backup Size: " + (preBackupFreeSpace - (preBackupFreeSpace - postBackupFreeSpace)) + "GB");
 
         // Do something with the string, like save it to a text file or something.
         System.out.println(stringBuilder.toString());
