@@ -139,9 +139,9 @@ public class BackupEngine {
      */
     public ArrayList<Drive> askWhichDrivesToBackup(ArrayList<File> listToAsk) {
 
-        Object[] options = {"Use as backup drive",
+        Object[] options = {"Backup this drive",
                 "No",
-                "Never use this drive to backup",
+                "Never backup this drive (permanent)",
         };
 
         int counter = 1;
@@ -259,7 +259,7 @@ public class BackupEngine {
 
                 // WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
                 // replace spaces in the mkdir with "\ "
-                //mkdir = mkdir.replace(" ", "\\ ");
+            mkdir = mkdir.replace(" ", "\\ ");
 
 
                 // Get exact path to the destination folder, find the best storage option and use that.
@@ -409,4 +409,7 @@ public class BackupEngine {
         System.out.println(stringBuilder.toString());
 
     }
+
+
+    // TODO : Windows and Mac Backup methods for speed, as of now windows gets through half the Mac stuff which is pointless.
 } // END OF BACKUP ENGINE

@@ -23,7 +23,8 @@ public class BackupDriveFileFilter extends MasterFilter {
             "dev",
             "etc",
             "home",
-            "mach_kernel"
+            "mach_kernel",
+            "Applications" // Applications mostly fail when backed up.
     };
 
 
