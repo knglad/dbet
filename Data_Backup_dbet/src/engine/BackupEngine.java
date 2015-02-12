@@ -403,7 +403,7 @@ public class BackupEngine {
         stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
         stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + (totalLineCounter - 1));
         stringBuilder.append("\n Percent Error: " + (float) Math.round(errorCounter / totalLineCounter) + "%");
-        stringBuilder.append("\n Total Backup Size: " + (preBackupFreeSpace - (preBackupFreeSpace - postBackupFreeSpace)) + "GB");
+        stringBuilder.append("\n Total Backup Size: " + Math.ceil(preBackupFreeSpace - (postBackupFreeSpace)) + "GB");
 
         // Do something with the string, like save it to a text file or something.
         System.out.println(stringBuilder.toString());
