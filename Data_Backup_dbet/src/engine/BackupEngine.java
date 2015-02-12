@@ -205,6 +205,8 @@ public class BackupEngine {
             // The process runtime uses a string array to handle creating a single command
             // I.E. String[]{"cp", "-Rv", "pathToBackup", "destination"};
 
+            // TODO : Add time functionality before doing the actual backup and compare at end for total time to backup
+
             // Use ArrayList to avoid extra spaces and keep array size to a minimum
             ArrayList<String> backupCommand = new ArrayList<String>();
 
@@ -402,8 +404,10 @@ public class BackupEngine {
         stringBuilder.append("\n");
         stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
         stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + (totalLineCounter - 1));
-        stringBuilder.append("\n Percent Error: " + (float) Math.round(errorCounter / totalLineCounter) + "%");
-        stringBuilder.append("\n Total Backup Size: " + Math.ceil(preBackupFreeSpace - (postBackupFreeSpace)) + "GB");
+
+        // the *100 / 100 should allow it to go to two points (two zero's) of precision so we don't have huge trailing floats
+        stringBuilder.append("\n Percent Error: " + (float) ((errorCounter / totalLineCounter) * 100 / 100) + "%");
+        stringBuilder.append("\n Total Backup Size: " + (((preBackupFreeSpace - postBackupFreeSpace) * 100) / 100) + "GB");
 
         // Do something with the string, like save it to a text file or something.
         System.out.println(stringBuilder.toString());
