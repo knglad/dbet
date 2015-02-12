@@ -1,7 +1,5 @@
 package engine;
 
-import filter.BackupDriveFileFilter;
-
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -216,47 +214,16 @@ public class BackupEngine {
             }
 
             // Find all the folders we want to backup from the drive
-            ArrayList<String> fullPathFilesList = new ArrayList<String>();
-
-            for (String fileName : findImportantFiles(drive.getFile().listFiles())) {
-                String fullPathFile = drive.getFile().getPath() + File.separator + fileName;
-                fullPathFilesList.add(fullPathFile);
-            }
 
 
-            backupCommand.addAll(fullPathFilesList);
+            backupCommand.addAll(du.getFullPathForFiles(drive));
 
 
             // Create the destination folder
-            String users = du.getUsers(drive);
+            du.askUserForMkdir(drive, parentWindow, {"Mac"});
 
 
-            String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
-                            "Potential users:\n" + users,
-                    "Make Directory", JOptionPane.QUESTION_MESSAGE);
 
-
-                if (mkdir == null) {
-                    boolean response = du.askUserYesNo("No input was detected for the directory, do you wish to proceed?", parentWindow);
-
-                    if (!response)
-                        break; // Don't backup this drive, move on.
-                    if (response) {
-                        mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
-                                        "Potential users:\n" + users,
-                                "Make Directory", JOptionPane.QUESTION_MESSAGE);
-                    }
-
-                    // Asked again, they obviously WANT to backup this drive just didn't input a name or closed the box.
-                    // Best thing to do is back it up for them, and just have them rename the folder by hand later.
-                    if (mkdir == null)
-                        mkdir = "RENAME THIS FOLDER!_" + drive.toString();
-                    /*
-                    Without this DBET will replace the last made RENAME THIS FOLDER! with the
-                    current one, losing data. The drive.toString();
-                    */
-
-                } // End of mkdir == null (the first time)
 
 
                 // WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
@@ -332,25 +299,6 @@ public class BackupEngine {
     }
 
 
-    public ArrayList<String> findImportantFiles(File[] files) {
-        // Look for anything that isn't a system file
-        ArrayList<String> filesWeWantSaved = new ArrayList<String>();
-        boolean addToList = true;
-        // Contains both Mac and PC files in the root folders of most drives that
-        // are system and we don't need to save.
-
-        BackupDriveFileFilter backupDriveFileFilter = new BackupDriveFileFilter();
-
-        for (File f : files) {
-            addToList = backupDriveFileFilter.filterSelection(f.getName());
-
-            if (addToList)
-                filesWeWantSaved.add(f.getName());
-        }
-
-        return filesWeWantSaved;
-    }
-
 
     public void runCommand(String[] command) {
 
@@ -416,4 +364,25 @@ public class BackupEngine {
 
 
     // TODO : Windows and Mac Backup methods for speed, as of now windows gets through half the Mac stuff which is pointless.
+
+
+    /**
+     * @return a string array that consists of the complete command for Macintosh systems (Mac OS X)
+     */
+    public String[] macBackup(Drive drive) {
+        ArrayList<String> backupCommand = new ArrayList<String>();
+
+        // Initial command and its flags in UNIX style command line
+        backupCommand.add("cp");
+        backupCommand.add("-Rv");
+
+        // Add to the list all the files (filtered) and their full paths to the command
+        backupCommand.addAll(du.getFullPathForFiles(drive));
+
+        // Create the destination folder
+        String[] mac = new String[]{"Mac"};
+        du.askUserForMkdir(drive, parentWindow, mac);
+
+
+    }
 } // END OF BACKUP ENGINE

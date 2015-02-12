@@ -1,5 +1,7 @@
 package engine;
 
+import filter.BackupDriveFileFilter;
+
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -146,6 +148,94 @@ public class DriveUtils {
 
         return false;
 
+    }
+
+
+    public ArrayList<String> findImportantFiles(File[] files) {
+        // Look for anything that isn't a system file
+        ArrayList<String> filesWeWantSaved = new ArrayList<String>();
+        boolean addToList = true;
+        // Contains both Mac and PC files in the root folders of most drives that
+        // are system and we don't need to save.
+
+        BackupDriveFileFilter backupDriveFileFilter = new BackupDriveFileFilter();
+
+        for (File f : files) {
+            addToList = backupDriveFileFilter.filterSelection(f.getName());
+
+            if (addToList)
+                filesWeWantSaved.add(f.getName());
+        }
+
+        return filesWeWantSaved;
+    }
+
+
+    /**
+     * We have a list of the files we want, but we need the ENTIRE path to do the transfer command, this will
+     * automatically give us the full path easily of any file given.
+     *
+     * @return list of full paths from the files given
+     */
+    public ArrayList<String> getFullPathForFiles(Drive drive) {
+        ArrayList<String> fullPathFilesList = new ArrayList<String>();
+
+        for (String fileName : findImportantFiles(drive.getFile().listFiles())) {
+            String fullPathFile = drive.getFile().getPath() + File.separator + fileName;
+            fullPathFilesList.add(fullPathFile);
+        }
+
+        return fullPathFilesList;
+
+    }
+
+    public String askUserForMkdir(Drive drive, JFrame parentWindow, String[]... mode) {
+
+        String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
+                        "Potential users:\n" + this.getUsers(drive),
+                "Make Directory", JOptionPane.QUESTION_MESSAGE);
+
+
+        if (mkdir == null) {
+            boolean response = this.askUserYesNo("No input was detected for the directory, do you wish to proceed?", parentWindow);
+
+            if (!response)
+                break; // Don't backup this drive, move on.
+            if (response) {
+                mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
+                                "Potential users:\n" + this.getUsers(drive),
+                        "Make Directory", JOptionPane.QUESTION_MESSAGE);
+            }
+
+            // Asked again, they obviously WANT to backup this drive just didn't input a name or closed the box.
+            // Best thing to do is back it up for them, and just have them rename the folder by hand later.
+            if (mkdir == null)
+                mkdir = "RENAME THIS FOLDER!_" + drive.toString();
+                    /*
+                    Without this DBET will replace the last made RENAME THIS FOLDER! with the
+                    current one, losing data. The drive.toString();
+                    */
+
+        } // End of mkdir == null (the first time)
+
+        // FILTER MKDIR HERE!
+        if (mode.length != 0) {
+            String mode_os = mode[0].toString().toLowerCase();
+
+            if (mode_os.contains("mac")) {
+
+                // MAC FILTERING RULES GO HERE
+
+
+            } else if (mode_os.contains("window") {
+
+                // WINDOWS FILTERING HERE
+
+
+            }
+        }
+
+        return mkdir;
     }
 
 }
