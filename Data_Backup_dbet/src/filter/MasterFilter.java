@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 /**
  * Created by kevin on 1/15/15.
- * <p/>
+ *
  * A Filter is essentially an arrayList of String that will be used to filter various things and make updating
  * and or maintaining the filters for all the processes DBET needs.
  */
@@ -20,8 +20,11 @@ public abstract class MasterFilter extends ArrayList<String> {
 
 
     /**
+     * For every filter contained in this list, check if the data contains any of the filters patterns. In example,
+     * we don't want the always there folder 'Library' to be backed up so we have a string that matches its name EXACTLY.
+     *
      * @param data -- a String that contains some data that we want to see if it is valuable or not
-     * @return -- false if the filter is contained within data, true if no filters were found within the data String.
+     * @return -- false if the filter is contained within data, true if no filter patterns were found within the data String.
      */
     public boolean filterSelection(String data) {
         for (String filter : this) {
@@ -45,7 +48,9 @@ public abstract class MasterFilter extends ArrayList<String> {
 
     /**
      * Allows each filter to have special rules to apply when filtering, should return TRUE if there are NO special
-     * rules to be applied for that filter.
+     * rules to be applied for that filter. In example, we want to see if a file has '.' before it, special rules
+     * can then take the string, turn it into a char array and check the first spot if its a '.' without breaking the
+     * dynamics of the filter itself.
      *
      * @return false means it fails and should not be used, true means it passes and can be used.
      */

@@ -200,103 +200,24 @@ public class BackupEngine {
 
 
         for (Drive drive : backupThisList) {
-            // The process runtime uses a string array to handle creating a single command
-            // I.E. String[]{"cp", "-Rv", "pathToBackup", "destination"};
+
 
             // TODO : Add time functionality before doing the actual backup and compare at end for total time to backup
+            // TODO : Save destination location to end result
 
-            // Use ArrayList to avoid extra spaces and keep array size to a minimum
-            ArrayList<String> backupCommand = new ArrayList<String>();
-
-            if (du.getOS().contains("Mac")) {
-                backupCommand.add("cp");
-                backupCommand.add("-Rv");
+            // Determine which OS it is and call that backup method
+            if (OS.contains("Mac")) {
+                macBackup(drive);
+            } else if (OS.contains("Windows")) {
+                windowsBackup(drive);
             }
 
-            // Find all the folders we want to backup from the drive
-
-
-            backupCommand.addAll(du.getFullPathForFiles(drive));
-
-
-            // Create the destination folder
-            du.askUserForMkdir(drive, parentWindow, {"Mac"});
 
 
 
-
-
-                // WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
-                // replace spaces in the mkdir with "\ "
-            mkdir = mkdir.replace(" ", "\\ ");
-
-
-                // Get exact path to the destination folder, find the best storage option and use that.
-
-            // This drive object will help us know about the total amount backed up.
-            Drive currentHighestStorageDrive = du.getHighestStorageDrive(pe.getDriveList());
-            preBackupFreeSpace = currentHighestStorageDrive.getCapacity("free");
-
-            mkdir = currentHighestStorageDrive.getMountPoint() + File.separator + mkdir + File.separator;
-
-                // BUG WORKAROUND Storage3 would lose its '/' after its name.
-                mkdir = mkdir.replace("//", "/");
-
-                // Add the Destination folder to the command
-                backupCommand.add(mkdir);
-
-
-                // Make the directory actually exist so we can back up to it
-                String[] makeDirectoryCommand = new String[]{"mkdir", mkdir};
-                try {
-                    Process p = Runtime.getRuntime().exec(makeDirectoryCommand);
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                    System.out.println("Could not reach destination folder to create directory.");
-                }
-
-
-            if (du.getOS().contains("Windows")) { // Thanks Powershell..for not doing multiple files in one command
-                // We've made the directory, now we need to do the backup.
-                for (String fileToBackup : fullPathFilesList) {
-                    // Create the command
-                    ArrayList<String> windowsCommand = new ArrayList<String>();
-                    windowsCommand.add("powershell.exe");
-                    windowsCommand.add("/C");
-                    windowsCommand.add("cp");
-                    windowsCommand.add(fileToBackup); // total path to the file / folder
-                    windowsCommand.add(mkdir); // total path to the destination
-                    windowsCommand.add("-recurse");
-                    windowsCommand.add("-verbose");
-
-                    String[] finalWindowsCommand = windowsCommand.toArray(new String[windowsCommand.size()]);
-                    if (DEBUG) {
-                        for (int i = 0; i < finalWindowsCommand.length; i++) {
-                            String s = finalWindowsCommand[i];
-                            System.out.println(s);
-                        }
-                    } else
-                        runCommand(finalWindowsCommand);
-                }
-            } else { // Its a MAC so do what you'd normally do.
-
-                // the command has been built lets make it into an array
-                String[] finalCommand = backupCommand.toArray(new String[backupCommand.size()]);
-
-                if (DEBUG) {
-                    for (int i = 0; i < finalCommand.length; i++) {
-                        String s = finalCommand[i];
-                        System.out.println(s);
-                    }
-                } else {
-                    // Now actually back it up.
-                    runCommand(finalCommand);
-                }
-            }
-            // After its all run we can show the statistics for how it went.
-            showCopyStatistics(currentHighestStorageDrive);
         }
     }
+
 
 
 
@@ -363,7 +284,6 @@ public class BackupEngine {
     }
 
 
-    // TODO : Windows and Mac Backup methods for speed, as of now windows gets through half the Mac stuff which is pointless.
 
 
     /**
@@ -379,9 +299,89 @@ public class BackupEngine {
         // Add to the list all the files (filtered) and their full paths to the command
         backupCommand.addAll(du.getFullPathForFiles(drive));
 
+
+        // Get exact path to the destination folder, find the best storage option and use that.
+        // This drive object will help us know about the total amount backed up,
+        Drive currentHighestStorageDrive = du.getHighestStorageDrive(pe.getDriveList());
+        preBackupFreeSpace = currentHighestStorageDrive.getCapacity("free");
+
         // Create the destination folder
-        String[] mac = new String[]{"Mac"};
-        du.askUserForMkdir(drive, parentWindow, mac);
+        String[] mac_filtering = new String[]{"Mac"};
+        String mkdir = du.askUserForMkdir(drive, parentWindow, currentHighestStorageDrive, mac_filtering);
+
+        // Add the Destination folder to the command
+        backupCommand.add(mkdir);
+
+
+        // Make the directory actually exist so we can back up to it
+        String[] makeDirectoryCommand = new String[]{"mkdir", mkdir};
+        try {
+            Process p = Runtime.getRuntime().exec(makeDirectoryCommand);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            System.out.println("Could not reach destination folder to create directory.");
+        }
+
+        String[] finalCommand = backupCommand.toArray(new String[backupCommand.size()]);
+
+
+        if (DEBUG) {
+            for (int i = 0; i < finalCommand.length; i++) {
+                String s = finalCommand[i];
+                System.out.println(s);
+            }
+        } else {
+            // Now actually back it up.
+            runCommand(finalCommand);
+        }
+
+        // After the command has run show us what happened.
+        showCopyStatistics(currentHighestStorageDrive);
+
+        return finalCommand;
+
+    }
+
+
+    public void windowsBackup(Drive drive) {
+
+
+        // Thanks Powershell..for not doing multiple files in one command
+
+        // Ask the user what they want to name the folder, create it and return the mkdir complete command in string form
+        String[] windows_filtering = new String[]{"Windows"};
+        String mkdir = du.askUserForMkdir(drive, parentWindow, du.getHighestStorageDrive(pe.getDriveList()), windows_filtering);
+
+
+        // Get all the files/folders that we want in a full paths list for powershell
+        ArrayList<String> fullPathFilesList = du.getFullPathForFiles(drive);
+
+
+        // We've made the directory, now we need to do the backup.
+        for (String fileToBackup : fullPathFilesList) {
+            // Create the command
+            ArrayList<String> windowsCommand = new ArrayList<String>();
+            windowsCommand.add("powershell.exe");
+            windowsCommand.add("/C");
+            windowsCommand.add("cp");
+            windowsCommand.add(fileToBackup); // total path to the file / folder
+            windowsCommand.add(mkdir); // total path to the destination
+            windowsCommand.add("-recurse");
+            windowsCommand.add("-verbose");
+
+            String[] finalWindowsCommand = windowsCommand.toArray(new String[windowsCommand.size()]);
+
+
+            if (DEBUG) {
+                for (int i = 0; i < finalWindowsCommand.length; i++) {
+                    String s = finalWindowsCommand[i];
+                    System.out.println(s);
+                }
+            } else
+                runCommand(finalWindowsCommand);
+        }
+
+        showCopyStatistics(drive);
 
 
     }

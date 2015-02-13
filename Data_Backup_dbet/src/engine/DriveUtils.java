@@ -189,7 +189,7 @@ public class DriveUtils {
 
     }
 
-    public String askUserForMkdir(Drive drive, JFrame parentWindow, String[]... mode) {
+    public String askUserForMkdir(Drive drive, JFrame parentWindow, Drive currentHighestStorageDrive, String[]... mode) {
 
         String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
                         "Potential users:\n" + this.getUsers(drive),
@@ -200,7 +200,7 @@ public class DriveUtils {
             boolean response = this.askUserYesNo("No input was detected for the directory, do you wish to proceed?", parentWindow);
 
             if (!response)
-                break; // Don't backup this drive, move on.
+
             if (response) {
                 mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
                                 "Potential users:\n" + this.getUsers(drive),
@@ -226,8 +226,14 @@ public class DriveUtils {
 
                 // MAC FILTERING RULES GO HERE
 
+                // WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
+                // replace spaces in the mkdir with "\ "
+                mkdir = mkdir.replace(" ", "\\ ");
 
-            } else if (mode_os.contains("window") {
+                // BUG WORKAROUND Storage3 would lose its '/' after its name.
+                mkdir = mkdir.replace("//", "/");
+
+            } else if (mode_os.contains("window")) {
 
                 // WINDOWS FILTERING HERE
 
@@ -235,6 +241,8 @@ public class DriveUtils {
             }
         }
 
+        // Finalize the mkdir command with the total path
+        mkdir = currentHighestStorageDrive.getMountPoint() + File.separator + mkdir + File.separator;
         return mkdir;
     }
 
