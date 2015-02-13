@@ -48,7 +48,7 @@ public abstract class MasterFilter extends ArrayList<String> {
 
     /**
      * Allows each filter to have special rules to apply when filtering, should return TRUE if there are NO special
-     * rules to be applied for that filter. In example, we want to see if a file has '.' before it, special rules
+     * rules to be applied for that data. In example, we want to see if a file has '.' before it, special rules
      * can then take the string, turn it into a char array and check the first spot if its a '.' without breaking the
      * dynamics of the filter itself.
      *

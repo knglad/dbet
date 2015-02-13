@@ -1,7 +1,7 @@
 package tests;
 
+import engine.DataDestinationEngine;
 import engine.DriveUtils;
-import engine.PrimaryEngine;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -11,7 +11,7 @@ public class engineTest {
 	
         @Test
 	public void PrimaryEngineTest(){
-            PrimaryEngine pe = new PrimaryEngine();
+            DataDestinationEngine pe = new DataDestinationEngine();
             DriveUtils du = new DriveUtils();
 
             System.out.println(du.getOS());

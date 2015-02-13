@@ -1,5 +1,7 @@
 package engine;
 
+import filter.CommandErrorFilter;
+
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,13 +31,15 @@ public class BackupEngine {
     public StringBuilder log;
     private boolean DEBUG = false;
     private DriveUtils du;
-    private PrimaryEngine pe;
+    private DataDestinationEngine dde;
 
     // Statistical variables
     private int totalLineCounter;
     private int errorCounter;
     private double preBackupFreeSpace;
     private double postBackupFreeSpace;
+    // Show where the data ended up.
+    private String destination;
 
     /**
      * @param window - Allows sending of signals to the window and its graphical components
@@ -48,7 +52,7 @@ public class BackupEngine {
             DEBUG = debugMode[0];
 
         du = new DriveUtils();
-        pe = new PrimaryEngine();
+        dde = new DataDestinationEngine();
 
         // OS determines where to look for newly mounted drives we may want to backup
         OS = du.getOS();
@@ -203,8 +207,9 @@ public class BackupEngine {
 
 
             // TODO : Add time functionality before doing the actual backup and compare at end for total time to backup
-            // TODO : Save destination location to end result
 
+            totalLineCounter = 1;
+            errorCounter = 0;
             // Determine which OS it is and call that backup method
             if (OS.contains("Mac")) {
                 macBackup(drive);
@@ -212,11 +217,11 @@ public class BackupEngine {
                 windowsBackup(drive);
             }
 
-
-
-
         }
     }
+
+
+
 
 
 
@@ -235,23 +240,17 @@ public class BackupEngine {
             String line; // Something to hold the current string so it can be saved and checked
 
             // Statistics to help determine if the backup worked or not.
-            totalLineCounter = 1;
-            errorCounter = 0;
+            CommandErrorFilter commandFilter = new CommandErrorFilter();
+
             while ((line = bufferedReader.readLine()) != null) {
                 // outputs the text to the console, DONT OUTPUT STRINGBUILDER AS THAT CAUSES REPEAT OUTPUT
                 System.out.println(line);
                 totalLineCounter++;
 
-                if (line.contains("error"))
+                if (!commandFilter.filterSelection(line))
                     errorCounter++;
-
-                else if (line.contains("usage:")) {
-                    errorCounter++;
-                    System.out.println("\"cp\" command failed to start.");
-                } else if (line.contains("Operation not supported")) {
-                    errorCounter++;
-                }
             }
+
             process.waitFor();
 
 
@@ -272,11 +271,11 @@ public class BackupEngine {
 
         stringBuilder.append("\n");
         stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
+        stringBuilder.append("Data backed up to: " + destination + "\n");
         stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + (totalLineCounter - 1));
-
         // the *100 / 100 should allow it to go to two points (two zero's) of precision so we don't have huge trailing floats
-        stringBuilder.append("\n Percent Error: " + (float) ((errorCounter / totalLineCounter) * 100 / 100) + "%");
-        stringBuilder.append("\n Total Backup Size: " + (((preBackupFreeSpace - postBackupFreeSpace) * 100) / 100) + "GB");
+        stringBuilder.append("\nPercent Error: " + (double) ((errorCounter / totalLineCounter) * 100 / 100) + "%");
+        stringBuilder.append("\nTotal Backup Size: " + Math.round(preBackupFreeSpace - postBackupFreeSpace) + "GB");
 
         // Do something with the string, like save it to a text file or something.
         System.out.println(stringBuilder.toString());
@@ -302,13 +301,13 @@ public class BackupEngine {
 
         // Get exact path to the destination folder, find the best storage option and use that.
         // This drive object will help us know about the total amount backed up,
-        Drive currentHighestStorageDrive = du.getHighestStorageDrive(pe.getDriveList());
+        Drive currentHighestStorageDrive = du.getHighestStorageDrive(dde.getDriveList());
         preBackupFreeSpace = currentHighestStorageDrive.getCapacity("free");
 
         // Create the destination folder
         String[] mac_filtering = new String[]{"Mac"};
         String mkdir = du.askUserForMkdir(drive, parentWindow, currentHighestStorageDrive, mac_filtering);
-
+        destination = mkdir;
         // Add the Destination folder to the command
         backupCommand.add(mkdir);
 
@@ -350,8 +349,8 @@ public class BackupEngine {
 
         // Ask the user what they want to name the folder, create it and return the mkdir complete command in string form
         String[] windows_filtering = new String[]{"Windows"};
-        String mkdir = du.askUserForMkdir(drive, parentWindow, du.getHighestStorageDrive(pe.getDriveList()), windows_filtering);
-
+        String mkdir = du.askUserForMkdir(drive, parentWindow, du.getHighestStorageDrive(dde.getDriveList()), windows_filtering);
+        destination = mkdir;
 
         // Get all the files/folders that we want in a full paths list for powershell
         ArrayList<String> fullPathFilesList = du.getFullPathForFiles(drive);

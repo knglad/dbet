@@ -3,7 +3,7 @@ package filter;
 /**
  * Created by kevin on 1/15/15.
  */
-public class BackupDriveFileFilter extends MasterFilter {
+public class BackupFileFilter extends MasterFilter {
 
     private String[] foldersAndFilesWeDontWant = new String[]{
             "Library",
@@ -28,7 +28,7 @@ public class BackupDriveFileFilter extends MasterFilter {
     };
 
 
-    public BackupDriveFileFilter() {
+    public BackupFileFilter() {
         super.setupFilterList(foldersAndFilesWeDontWant);
     }
 

@@ -1,6 +1,6 @@
 package tests;
 
-import filter.BackupDriveFileFilter;
+import filter.BackupFileFilter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -12,7 +12,7 @@ public class testFilterChildren {
 
     @Test
     public void testFilterListIsCreated() {
-        BackupDriveFileFilter bdff = new BackupDriveFileFilter();
+        BackupFileFilter bdff = new BackupFileFilter();
 
         assertEquals("Yose Life Image", bdff.get(3));
         assertEquals("private", bdff.get(5));

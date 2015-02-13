@@ -1,7 +1,7 @@
 package tests;
 
+import engine.DataDestinationEngine;
 import engine.Drive;
-import engine.PrimaryEngine;
 import org.junit.Test;
 
 import java.io.File;
@@ -26,7 +26,7 @@ public class fileMountTest {
     // to be there isn't
     @Test
     public void testRawDrivesWhenNotPresent() {
-        PrimaryEngine pe = new PrimaryEngine();
+        DataDestinationEngine pe = new DataDestinationEngine();
 
         for (Drive d : pe.getDriveList()) {
             System.out.println(d.getMountPoint() + "  " + d.getCapacity("free"));

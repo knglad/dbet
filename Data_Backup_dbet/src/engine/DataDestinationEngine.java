@@ -7,12 +7,15 @@ import java.util.ArrayList;
  * 
  * @author kevin
  *
- * Primary Engine handles the interactions for the drives that we will backup TO, that is to say the destination for
- * the data we want to backup.
+ * The Data Destination Engine handles the interactions for the drives that we will backup TO, that is to say the destination for
+ * the data we want to backup. Things like creating Drive objects from the drives we want to store data to, reducing JRE time to
+ * access the OS, which reduces clashes from other OS processes.
+ *
+ * DDE stores the hard coded list of drives that we KNOW are suitable for back ups (through enough size or dedicated to just customer data for safety).
  *
  */
 
-public class PrimaryEngine {
+public class DataDestinationEngine {
 
 
 
@@ -28,8 +31,7 @@ public class PrimaryEngine {
 	private String[] windowsVolumes = {"F:/CustBackup/"};
 
 
-
-    public PrimaryEngine(){
+	public DataDestinationEngine() {
 		// Determine which OS we are working with
 
 

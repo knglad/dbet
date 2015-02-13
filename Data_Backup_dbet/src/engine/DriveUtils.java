@@ -1,6 +1,6 @@
 package engine;
 
-import filter.BackupDriveFileFilter;
+import filter.BackupFileFilter;
 
 import javax.swing.*;
 import java.io.File;
@@ -158,7 +158,7 @@ public class DriveUtils {
         // Contains both Mac and PC files in the root folders of most drives that
         // are system and we don't need to save.
 
-        BackupDriveFileFilter backupDriveFileFilter = new BackupDriveFileFilter();
+        BackupFileFilter backupDriveFileFilter = new BackupFileFilter();
 
         for (File f : files) {
             addToList = backupDriveFileFilter.filterSelection(f.getName());
@@ -220,9 +220,9 @@ public class DriveUtils {
 
         // FILTER MKDIR HERE!
         if (mode.length != 0) {
-            String mode_os = mode[0].toString().toLowerCase();
+            String[] mode_os = mode[0];
 
-            if (mode_os.contains("mac")) {
+            if (mode_os[0].contains("Mac")) {
 
                 // MAC FILTERING RULES GO HERE
 
@@ -233,7 +233,7 @@ public class DriveUtils {
                 // BUG WORKAROUND Storage3 would lose its '/' after its name.
                 mkdir = mkdir.replace("//", "/");
 
-            } else if (mode_os.contains("window")) {
+            } else if (mode_os[0].contains("Window")) {
 
                 // WINDOWS FILTERING HERE
 
