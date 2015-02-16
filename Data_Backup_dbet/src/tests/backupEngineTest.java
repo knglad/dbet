@@ -1,6 +1,9 @@
 package tests;
 
 import engine.BackupEngine;
+import engine.DataDestinationEngine;
+import engine.Drive;
+import engine.DriveUtils;
 import org.junit.Test;
 
 import javax.swing.*;
@@ -86,5 +89,21 @@ public class backupEngineTest {
             System.out.println(sb.toString());
 
         }
+    }
+
+    @Test
+    public void testMkdirCreatesFoldersProperly() {
+        DriveUtils du = new DriveUtils();
+        JFrame j = new JFrame();
+
+        DataDestinationEngine dde = new DataDestinationEngine();
+        ArrayList<Drive> list = dde.getDriveList();
+
+        // Swap the OS for the proper mode filtering and syntax handling for the mkdir command
+        String[] OS = new String[]{"Mac"}; //{"Windows"};
+
+        du.askUserForMkdir(list.get(0), j, list.get(1), OS);
+
+
     }
 }
