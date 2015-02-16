@@ -376,6 +376,7 @@ public class BackupEngine {
                     String s = finalWindowsCommand[i];
                     System.out.println(s);
                 }
+                break; // I only need to see a single file to test the command
             } else
                 runCommand(finalWindowsCommand);
         }

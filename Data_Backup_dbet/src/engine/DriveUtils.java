@@ -233,16 +233,42 @@ public class DriveUtils {
                 // BUG WORKAROUND Storage3 would lose its '/' after its name.
                 mkdir = mkdir.replace("//", "/");
 
+                mkdir = currentHighestStorageDrive.getMountPoint() + File.separator + mkdir + File.separator;
+
             } else if (mode_os[0].contains("Window")) {
 
                 // WINDOWS FILTERING HERE
 
+                mkdir = mkdir.replace("\\\\", "\\");
+
+                // F:\ would not go to custBackup without this
+                String custBackup = currentHighestStorageDrive.getMountPoint();
+                if (currentHighestStorageDrive.getMountPoint().contains("F:")) {
+                    custBackup = custBackup + "CustBackup\\";
+
+                }
+
+                // Windows usees strings in powershell for spaces
+                char[] mkdir_as_chars = mkdir.toCharArray();
+                // Make new array that allows me to add a ' before and after the folder location.
+                char[] mkdir_char_to_string = new char[mkdir_as_chars.length + 2];
+
+                mkdir_char_to_string[0] = '\'';
+
+                for (int i = 0; i < mkdir_as_chars.length; i++) {
+                    mkdir_char_to_string[i + 1] = mkdir_as_chars[i];
+                }
+
+                mkdir_char_to_string[mkdir_char_to_string.length - 1] = '\'';
+
+
+                mkdir = custBackup + mkdir + File.separator;
 
             }
         }
 
         // Finalize the mkdir command with the total path
-        mkdir = currentHighestStorageDrive.getMountPoint() + File.separator + mkdir + File.separator;
+
         return mkdir;
     }
 
