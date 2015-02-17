@@ -34,6 +34,7 @@ public class backupEngineTest {
              * When prompted by the JOptionPane have it add the keyword to the list and close the program.
              * Rerun the program and see if it is detected (should load the list automatically).
              */
+        // Mac Folder Creation (askUserForMkdir in du) should name folders properly
     }
 
 
@@ -102,7 +103,7 @@ public class backupEngineTest {
         // Swap the OS for the proper mode filtering and syntax handling for the mkdir command
         String[] OS = new String[]{"Mac"}; //{"Windows"};
 
-        du.askUserForMkdir(list.get(0), j, list.get(1), OS);
+        du.askUserForMkdir(list.get(0), j, list.get(0), false, OS);
 
 
     }

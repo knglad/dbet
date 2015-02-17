@@ -66,10 +66,9 @@ public class BackupEngine {
         if (DEBUG)
             System.out.println("Debugging has been enabled, no commands will be run!");
         // -----------------------------------------------
-        // Find the drives to backup
-        ArrayList<File> drivesWeMayWantToBackup;
-        drivesWeMayWantToBackup = findDrivesToBackup(dd);
 
+        // Find the drives to backup
+        ArrayList<File> drivesWeMayWantToBackup = findDrivesToBackup(dd);
 
 
         // Ask which ones to backup, make a list
@@ -306,20 +305,13 @@ public class BackupEngine {
 
         // Create the destination folder
         String[] mac_filtering = new String[]{"Mac"};
-        String mkdir = du.askUserForMkdir(drive, parentWindow, currentHighestStorageDrive, mac_filtering);
-        destination = mkdir;
+
+        // mkdir[1] is the actual destination
+        String[] mkdir = du.askUserForMkdir(drive, parentWindow, currentHighestStorageDrive, DEBUG, mac_filtering);
+        destination = mkdir[1];
+
         // Add the Destination folder to the command
-        backupCommand.add(mkdir);
-
-
-        // Make the directory actually exist so we can back up to it
-        String[] makeDirectoryCommand = new String[]{"mkdir", mkdir};
-        try {
-            Process p = Runtime.getRuntime().exec(makeDirectoryCommand);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-            System.out.println("Could not reach destination folder to create directory.");
-        }
+        backupCommand.add(mkdir[1]);
 
         String[] finalCommand = backupCommand.toArray(new String[backupCommand.size()]);
 
@@ -349,8 +341,8 @@ public class BackupEngine {
 
         // Ask the user what they want to name the folder, create it and return the mkdir complete command in string form
         String[] windows_filtering = new String[]{"Windows"};
-        String mkdir = du.askUserForMkdir(drive, parentWindow, du.getHighestStorageDrive(dde.getDriveList()), windows_filtering);
-        destination = mkdir;
+        String[] mkdir = du.askUserForMkdir(drive, parentWindow, du.getHighestStorageDrive(dde.getDriveList()), DEBUG, windows_filtering);
+        destination = mkdir[1];
 
         // Get all the files/folders that we want in a full paths list for powershell
         ArrayList<String> fullPathFilesList = du.getFullPathForFiles(drive);
@@ -364,7 +356,7 @@ public class BackupEngine {
             windowsCommand.add("/C");
             windowsCommand.add("cp");
             windowsCommand.add(fileToBackup); // total path to the file / folder
-            windowsCommand.add(mkdir); // total path to the destination
+            windowsCommand.add(mkdir[1]); // total path to the destination
             windowsCommand.add("-recurse");
             windowsCommand.add("-verbose");
 

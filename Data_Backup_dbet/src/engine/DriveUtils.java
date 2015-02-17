@@ -4,6 +4,7 @@ import filter.BackupFileFilter;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -189,7 +190,23 @@ public class DriveUtils {
 
     }
 
-    public String askUserForMkdir(Drive drive, JFrame parentWindow, Drive currentHighestStorageDrive, String[]... mode) {
+
+    /**
+     * Does the logic for the string to be used for the mkdir command. This method is OS sensitive and has explicit
+     * filtering for either Windows or Mac (because of syntatical differences). This does NOT run the command when debug
+     * is set to true.
+     *
+     * @param drive                      -- Drive we are backing up (to show the users for the operator)
+     * @param parentWindow               -- Used for the JOptionPane to actually have the popup exist
+     * @param currentHighestStorageDrive -- Used for the destination of the mkdir command
+     * @param mode                       -- Allows string filtering for proper syntax based on OS, "Mac" or "Windows" are accepted
+     * @return A String[] containing the command issued to the system. [1] is the un-filtered destination where
+     * [2] is the filtered selection.
+     */
+    public String[] askUserForMkdir(Drive drive, JFrame parentWindow, Drive currentHighestStorageDrive, boolean debug, String[]... mode) {
+
+        String[] commandToGiveToUser = new String[3];
+        commandToGiveToUser[0] = "mkdir";
 
         String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
                         "Potential users:\n" + this.getUsers(drive),
@@ -218,6 +235,8 @@ public class DriveUtils {
 
         } // End of mkdir == null (the first time)
 
+
+
         // FILTER MKDIR HERE!
         if (mode.length != 0) {
             String[] mode_os = mode[0];
@@ -228,12 +247,15 @@ public class DriveUtils {
 
                 // WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
                 // replace spaces in the mkdir with "\ "
-                mkdir = mkdir.replace(" ", "\\ ");
+                //mkdir = mkdir.replace(" ", "\\ ");
 
                 // BUG WORKAROUND Storage3 would lose its '/' after its name.
                 mkdir = mkdir.replace("//", "/");
 
                 mkdir = currentHighestStorageDrive.getMountPoint() + File.separator + mkdir + File.separator;
+
+
+
 
             } else if (mode_os[0].contains("Window")) {
 
@@ -243,13 +265,14 @@ public class DriveUtils {
 
                 // F:\ would not go to custBackup without this
                 String custBackup = currentHighestStorageDrive.getMountPoint();
-                if (currentHighestStorageDrive.getMountPoint().contains("F:")) {
-                    custBackup = custBackup + "CustBackup\\";
 
+                if (custBackup.contains("F:")) {
+                    custBackup = custBackup + "CustBackup\\";
                 }
 
                 // Windows usees strings in powershell for spaces
                 char[] mkdir_as_chars = mkdir.toCharArray();
+
                 // Make new array that allows me to add a ' before and after the folder location.
                 char[] mkdir_char_to_string = new char[mkdir_as_chars.length + 2];
 
@@ -261,15 +284,28 @@ public class DriveUtils {
 
                 mkdir_char_to_string[mkdir_char_to_string.length - 1] = '\'';
 
+                mkdir = mkdir_char_to_string.toString();
 
                 mkdir = custBackup + mkdir + File.separator;
+
 
             }
         }
 
-        // Finalize the mkdir command with the total path
 
-        return mkdir;
+        commandToGiveToUser[1] = mkdir;
+
+
+        if (!debug) {
+            try {
+                Process p = Runtime.getRuntime().exec(commandToGiveToUser);
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+                System.out.println("Could not reach destination folder to create directory.");
+            }
+        }
+
+        return commandToGiveToUser;
     }
 
 }
