@@ -87,6 +87,7 @@ public class BackupEngine {
 
     }
 
+
     /**
      * @param driveList - all the drives we DONT backup, in the form of ArrayList<String>
      * @return A new arrayList with the drives we DO want to backup
@@ -206,6 +207,10 @@ public class BackupEngine {
 
 
             // TODO : Add time functionality before doing the actual backup and compare at end for total time to backup
+            // TODO : Precalculate the backup size and see if any of the backup drives can handle it.
+            // Possibly use some threading to calculate it as its working since this operation may take
+            // some time, Could return the amount in percentage that we can get with the most storage option available.
+
 
             totalLineCounter = 1;
             errorCounter = 0;
@@ -250,7 +255,9 @@ public class BackupEngine {
                     errorCounter++;
             }
 
+
             process.waitFor();
+            bufferedReader.close();
 
 
         } catch (IOException e) {
@@ -260,6 +267,7 @@ public class BackupEngine {
             ie.printStackTrace();
             System.out.println("Interrupted During Out/In/Error stream reading");
         }
+
 
     }
 

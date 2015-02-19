@@ -5,6 +5,8 @@ import filter.BackupFileFilter;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 /**
@@ -20,6 +22,28 @@ public class DriveUtils {
         OS = System.getProperty("os.name");
     }
 
+    /**
+     * Round used from StackOverflow, created by Louis Wasserman and Sean Owen, adapted by user Jonik
+     *
+     * @param value  -- the value we want to round up
+     * @param places -- the number of places we want to go before rounding up
+     * @return the double that contains only up to 'places' number of precision
+     */
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
+    public static float round(float value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.floatValue();
+    }
 
     public float byteToGigabyte(float num) {
 
@@ -28,10 +52,17 @@ public class DriveUtils {
 
         //TODO :: Test divisor on Windows to see if they use 1024 instead
 
-        return (((num / divisor) / divisor) / divisor);
+        return round((((num / divisor) / divisor) / divisor), 2);
 
     }
 
+    public double byteToGigabyte(Double num) {
+        int divisor = 1000; // definition of when to change names in byte size kilo -> mega etc
+        // On Mac OS X, 1000 is the appropriate one.
+
+        return round((((num / divisor) / divisor) / divisor), 2);
+
+    }
 
     /**
      * @param rawDrives - ArrayList<Drive> that is all the current drives as they were PRIOR to backing up.
@@ -126,7 +157,6 @@ public class DriveUtils {
         return OS;
     }
 
-
     /**
      * @param message      -- what to tell the user
      * @param parentWindow -- JFrame to make the JOptionPane happy
@@ -134,7 +164,7 @@ public class DriveUtils {
      * the program (to avoid flooding).
      */
     public boolean askUserYesNo(String message, JFrame parentWindow) {
-        int n = JOptionPane.showConfirmDialog(parentWindow, message, "", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
+        int n = JOptionPane.showConfirmDialog(parentWindow, message + "\nClosing this dialog will close DBET", "", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
 
         // 0 is YES
         if (n == 0)
@@ -150,7 +180,6 @@ public class DriveUtils {
         return false;
 
     }
-
 
     public ArrayList<String> findImportantFiles(File[] files) {
         // Look for anything that isn't a system file
@@ -171,7 +200,6 @@ public class DriveUtils {
         return filesWeWantSaved;
     }
 
-
     /**
      * We have a list of the files we want, but we need the ENTIRE path to do the transfer command, this will
      * automatically give us the full path easily of any file given.
@@ -190,7 +218,6 @@ public class DriveUtils {
 
     }
 
-
     /**
      * Does the logic for the string to be used for the mkdir command. This method is OS sensitive and has explicit
      * filtering for either Windows or Mac (because of syntatical differences). This does NOT run the command when debug
@@ -205,12 +232,14 @@ public class DriveUtils {
      */
     public String[] askUserForMkdir(Drive drive, JFrame parentWindow, Drive currentHighestStorageDrive, boolean debug, String[]... mode) {
 
-        String[] commandToGiveToUser = new String[3];
+        String[] commandToGiveToUser = new String[2];
         commandToGiveToUser[0] = "mkdir";
 
         String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
                         "Potential users:\n" + this.getUsers(drive),
                 "Make Directory", JOptionPane.QUESTION_MESSAGE);
+
+
 
 
         if (mkdir == null) {
@@ -229,11 +258,13 @@ public class DriveUtils {
             if (mkdir == null)
                 mkdir = "RENAME THIS FOLDER!_" + drive.toString();
                     /*
-                    Without this DBET will replace the last made RENAME THIS FOLDER! with the
+                    Without drive.toString() DBET will replace the last made RENAME THIS FOLDER! with the
                     current one, losing data. The drive.toString();
                     */
 
         } // End of mkdir == null (the first time)
+
+
 
 
 
@@ -263,9 +294,10 @@ public class DriveUtils {
 
                 mkdir = mkdir.replace("\\\\", "\\");
 
-                // F:\ would not go to custBackup without this
+
                 String custBackup = currentHighestStorageDrive.getMountPoint();
 
+                // F:\ would not go to custBackup without this
                 if (custBackup.contains("F:")) {
                     custBackup = custBackup + "CustBackup\\";
                 }
@@ -303,9 +335,36 @@ public class DriveUtils {
                 ioe.printStackTrace();
                 System.out.println("Could not reach destination folder to create directory.");
             }
-        }
+        } else
+            System.out.println(commandToGiveToUser);
 
         return commandToGiveToUser;
     }
 
+    /**
+     * There is a posibility that the user has more data than we can backup, this method allows us to deal with this
+     * quickly
+     *
+     * @param driveToPossiblyBackup
+     * @param highestCapacityStorageDrive
+     * @param parentWindow                -- Allows us to ask the user if there is NOT enough space, to continue anyway with a JOptionPane
+     * @return true if we can back up the drive, false if we cannot due to space restrictions
+     */
+    public boolean getSystemHasSufficientStorage(Drive driveToPossiblyBackup, Drive highestCapacityStorageDrive, JFrame parentWindow) {
+        if (driveToPossiblyBackup.getCapacity("used") < highestCapacityStorageDrive.getCapacity("free"))
+            return true;
+
+        else {
+
+            double percentWeCanGetRoundedDown = Math.floor(highestCapacityStorageDrive.getCapacity("free") / driveToPossiblyBackup.getCapacity("used"));
+
+            boolean response = this.askUserYesNo("The Drive you are attempting to back up is too large for this systems free capacities." +
+                    "\nTotal Size of Backup: " + this.byteToGigabyte(driveToPossiblyBackup.getCapacity("used")) + "GB" +
+                    "\nTotal Size of Largest Drive on System: " + this.byteToGigabyte(highestCapacityStorageDrive.getCapacity("free")) + "GB" +
+                    "\n Total Percent we can backup with current system: " + percentWeCanGetRoundedDown + "GB" +
+                    "\nWould you like to proceed anyway?", parentWindow);
+
+            return response;
+        }
+    }
 }

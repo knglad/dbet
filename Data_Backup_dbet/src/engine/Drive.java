@@ -57,7 +57,7 @@ public class Drive {
 		else if (type.equals("used"))
 			return usedCapacity;
 		else
-			return 0.0;
+			return -1.0;
 	}
 
 	public File getFile() {
