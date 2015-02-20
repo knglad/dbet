@@ -25,7 +25,7 @@ public class engineTest {
                 assertEquals("/Volumes/Storage", pe.getDriveList().get(0).getMountPoint()); // It knows its a folder, drops the last '/'
                 // Also the getName() returns the folder we are in with this file particularly. getPath returns the entire path for the file.
 
-                assertEquals("/Volumes/Storage2", pe.getDriveList().get(1).getMountPoint());
+                assertEquals("/Volumes/Storage 2 (500)", pe.getDriveList().get(1).getMountPoint());
 
                 // Check to ensure they have specific free space remaining
                 assertTrue(pe.getDriveList().get(0).getCapacity("total") !=
@@ -37,7 +37,7 @@ public class engineTest {
             }
 
 
-            System.out.println(pe.getDriveList().get(0).getCapacity("total") / Math.pow(1000, 3) );
-		
-	}
+            System.out.println(pe.getDriveList().get(0).getCapacity("total"));
+
+        }
 }

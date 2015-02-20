@@ -27,7 +27,7 @@ public class DataDestinationEngine {
 	 */
 
 			// NOTE: macVolumes must be the absolute path to EACH PARTITIONS ROOT!! Breaks otherwise and doesn't know what to do.
-	private String[] macVolumes = {"/Volumes/Storage/", "/Volumes/Storage2/", "/Volumes/Storage3/"};
+	private String[] macVolumes = {"/Volumes/Storage/", "/Volumes/Storage 2 (500)/", "/Volumes/Storage3/"};
 	private String[] windowsVolumes = {"F:/CustBackup/"};
 
 

@@ -17,8 +17,18 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
     private boolean similar_name_dont_backup = false;
     // any drive matching these patterns wont be backed up, must match the pattern in the strings entirety
     // I.E "LM PNP" wont filter a drive with just "LM" or just "PNP".
-    private String[] disregardKeywords = {"LM PNP", "WD SmartWare", "gimp", "Storage", "Adobe", "KeePass", ".DS",
-            "Data Drive", "(C:)", "CSC Backup", "System Image"};
+    private String[] disregardKeywords = {"LM PNP",
+            "WD SmartWare",
+            "gimp",
+            "Storage",
+            "Adobe",
+            "KeePass",
+            ".DS",
+            ".DS",
+            "Data Drive",
+            "(C:)",
+            "CSC Backup",
+            "System Image"};
 
 
 
@@ -28,7 +38,7 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
 
     public boolean addWithoutDuplicates(String keyword) {
         if (this.contains(keyword)) {
-            System.out.println("Failed to add " + keyword + "DUPLICATE ERROR!");
+            System.out.println("Failed to add " + keyword + " entry already in DisregardDrives!");
             return false;
         } else {
             this.add(keyword);
