@@ -101,9 +101,11 @@ public class backupEngineTest {
         ArrayList<Drive> list = dde.getDriveList();
 
         // Swap the OS for the proper mode filtering and syntax handling for the mkdir command
-        String[] OS = new String[]{"Mac"}; //{"Windows"};
+        String[] OS = new String[]//{"Mac"};
+                {"Windows"};
 
-        du.askUserForMkdir(list.get(0), j, list.get(0), false, OS);
+
+        du.askUserForMkdir(list.get(0), j, list.get(0), true, OS);
 
 
     }

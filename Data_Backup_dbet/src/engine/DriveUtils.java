@@ -294,6 +294,7 @@ public class DriveUtils {
 
                 mkdir = mkdir.replace("\\\\", "\\");
 
+                // TODO :: Test that we only need quotes if there is a space. AND ADD IF STATEMENT TO FIX THIS
 
                 String custBackup = currentHighestStorageDrive.getMountPoint();
 
@@ -316,9 +317,9 @@ public class DriveUtils {
 
                 mkdir_char_to_string[mkdir_char_to_string.length - 1] = '\'';
 
-                mkdir = mkdir_char_to_string.toString();
+                String charArrayToString = new String(mkdir_char_to_string);
 
-                mkdir = custBackup + mkdir + File.separator;
+                mkdir = custBackup + charArrayToString + File.separator;
 
 
             }
@@ -335,8 +336,10 @@ public class DriveUtils {
                 ioe.printStackTrace();
                 System.out.println("Could not reach destination folder to create directory.");
             }
-        } else
-            System.out.println(commandToGiveToUser);
+        } else {
+            for (String s : commandToGiveToUser)
+                System.out.println(s);
+        }
 
         return commandToGiveToUser;
     }
