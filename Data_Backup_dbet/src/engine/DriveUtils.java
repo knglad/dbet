@@ -53,7 +53,7 @@ public class DriveUtils {
 
         //TODO :: Test divisor on Windows to see if they use 1024 instead
 
-        return round((((num / divisor) / divisor) / divisor), 2);
+        return round((((num / divisor) / divisor) / divisor), 1);
 
     }
 
@@ -61,7 +61,7 @@ public class DriveUtils {
         int divisor = 1000; // definition of when to change names in byte size kilo -> mega etc
         // On Mac OS X, 1000 is the appropriate one.
 
-        return round((((num / divisor) / divisor) / divisor), 2);
+        return round((((num / divisor) / divisor) / divisor), 1);
 
     }
 
@@ -94,6 +94,7 @@ public class DriveUtils {
     public Drive mountPointToDrive(File file) {
 
         if (OS.contains("Windows")) {
+            // Windows doesn't have a place where all filesystems are mounted, so we look for char:
             char[] name = file.getPath().toCharArray();
             String mountPoint = "";
             for (int i = 0; i < name.length; i++) {
@@ -108,7 +109,7 @@ public class DriveUtils {
         String path = file.getAbsolutePath();
         double capac = byteToGigabyte(file.getTotalSpace());
         double free = byteToGigabyte(file.getFreeSpace());
-        double used = capac - free;
+        double used = round(capac - free, 2);
 
 
         Drive drive = new Drive(name, path, capac, free, used, OS, file);
@@ -161,7 +162,7 @@ public class DriveUtils {
      * the program (to avoid flooding).
      */
     public boolean askUserYesNo(String message, JFrame parentWindow) {
-        int n = JOptionPane.showConfirmDialog(parentWindow, message + "\nClosing this dialog will close DBET", "", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
+        int n = JOptionPane.showConfirmDialog(parentWindow, message + "\n\nClosing this dialog will close DBET", "", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
 
         // 0 is YES
         if (n == 0)
@@ -353,14 +354,17 @@ public class DriveUtils {
             return true;
 
         else {
+//            double used = this.byteToGigabyte(driveToPossiblyBackup.getFile().getTotalSpace() - driveToPossiblyBackup.getFile().getUsableSpace());
+//            double highestFreeStorage = this.byteToGigabyte(driveToPossiblyBackup.getFile().getFreeSpace());
+            double used = driveToPossiblyBackup.getCapacity("used");
+            double highestFreeStorage = highestCapacityStorageDrive.getCapacity("free");
+            double percentWeCanGetRoundedDown = round((highestFreeStorage / used) * 100, 2);
 
-            double percentWeCanGetRoundedDown = Math.floor(highestCapacityStorageDrive.getCapacity("free") / driveToPossiblyBackup.getCapacity("used"));
-            //double used =
 
             boolean response = this.askUserYesNo("The drive " + driveToPossiblyBackup.getName() + " you are attempting to back up is too large for this systems free capacities.\n" +
-                    "\nTotal Size of Backup: " + this.byteToGigabyte(driveToPossiblyBackup.getCapacity("used")) + "GB" +
-                    "\nTotal Size of Largest Drive on System: " + this.byteToGigabyte(highestCapacityStorageDrive.getCapacity("free")) + "GB" +
-                    "\n Total Percent we can backup with current system: " + percentWeCanGetRoundedDown + "%" +
+                    "\nTotal Size of Backup: " + used + "GB" +
+                    "\nTotal Size of Largest Drive on System: " + highestFreeStorage + "GB" +
+                    "\nTotal Percent we can backup with current system: " + percentWeCanGetRoundedDown + "%" +
                     "\nWould you like to proceed anyway?", parentWindow);
 
             return response;
