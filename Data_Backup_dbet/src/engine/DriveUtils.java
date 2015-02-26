@@ -170,7 +170,7 @@ public class DriveUtils {
         if (n == 1)
             return false;
         if (n == -1) {
-            System.out.println("Closing DBET per user, no further drives will be backed up.");
+            System.out.println("\nClosing DBET per user, no further drives will be backed up.");
             System.exit(0);
         }
 
@@ -359,7 +359,7 @@ public class DriveUtils {
             boolean response = this.askUserYesNo("The Drive you are attempting to back up is too large for this systems free capacities." +
                     "\nTotal Size of Backup: " + this.byteToGigabyte(driveToPossiblyBackup.getCapacity("used")) + "GB" +
                     "\nTotal Size of Largest Drive on System: " + this.byteToGigabyte(highestCapacityStorageDrive.getCapacity("free")) + "GB" +
-                    "\n Total Percent we can backup with current system: " + percentWeCanGetRoundedDown + "GB" +
+                    "\n Total Percent we can backup with current system: " + percentWeCanGetRoundedDown + "%" +
                     "\nWould you like to proceed anyway?", parentWindow);
 
             return response;

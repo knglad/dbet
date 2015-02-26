@@ -309,6 +309,7 @@ public class BackupEngine {
         // Get exact path to the destination folder, find the best storage option and use that.
         // This drive object will help us know about the total amount backed up,
         Drive currentHighestStorageDrive = du.getHighestStorageDrive(dde.getDriveList());
+        du.getSystemHasSufficientStorage(drive, currentHighestStorageDrive, parentWindow);
         preBackupFreeSpace = currentHighestStorageDrive.getCapacity("free");
 
         // Create the destination folder
