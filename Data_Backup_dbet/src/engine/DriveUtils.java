@@ -240,9 +240,7 @@ public class DriveUtils {
 
 
         if (mkdir == null) {
-            boolean response = this.askUserYesNo("No input was detected for the directory, do you wish to proceed?", parentWindow);
-
-            if (!response)
+            boolean response = this.askUserYesNo("No input was detected for the directory, do you wish to proceed?\n\nPressing 'No' will auto-generate a folder and backup the drive.\n", parentWindow);
 
             if (response) {
                 mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
