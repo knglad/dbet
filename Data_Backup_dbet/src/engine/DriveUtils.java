@@ -240,7 +240,7 @@ public class DriveUtils {
 
 
         if (mkdir == null) {
-            boolean response = this.askUserYesNo("No input was detected for the directory, do you wish to proceed?\n\nPressing 'No' will auto-generate a folder and backup the drive.\n", parentWindow);
+            boolean response = this.askUserYesNo("No input was detected for the directory, do you wish to proceed?\n\nPressing 'No' will auto-generate a folder and backup the drive.", parentWindow);
 
             if (response) {
                 mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
@@ -355,8 +355,9 @@ public class DriveUtils {
         else {
 
             double percentWeCanGetRoundedDown = Math.floor(highestCapacityStorageDrive.getCapacity("free") / driveToPossiblyBackup.getCapacity("used"));
+            //double used =
 
-            boolean response = this.askUserYesNo("The Drive you are attempting to back up is too large for this systems free capacities." +
+            boolean response = this.askUserYesNo("The drive " + driveToPossiblyBackup.getName() + " you are attempting to back up is too large for this systems free capacities.\n" +
                     "\nTotal Size of Backup: " + this.byteToGigabyte(driveToPossiblyBackup.getCapacity("used")) + "GB" +
                     "\nTotal Size of Largest Drive on System: " + this.byteToGigabyte(highestCapacityStorageDrive.getCapacity("free")) + "GB" +
                     "\n Total Percent we can backup with current system: " + percentWeCanGetRoundedDown + "%" +
