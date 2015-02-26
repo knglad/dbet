@@ -1,6 +1,7 @@
 package engine;
 
 import filter.BackupFileFilter;
+import filter.UsersNameFilter;
 
 import javax.swing.*;
 import java.io.File;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 
 /**
  * Created by kevin on 1/12/15.
- * <p/>
+ *
  * Maintains the utilities to be used on Drive objects, where both engines use the same methods without code duplication.
  */
 public class DriveUtils {
@@ -126,25 +127,21 @@ public class DriveUtils {
                     Filter the Users folders, if it passes all the filters it is added in a single logic tree
                  */
 
-                if (f.getName().toCharArray()[0] == '.') {
-                } // '.DS_Store' is not a user
+                UsersNameFilter usersNameFilter = new UsersNameFilter();
 
-                else if (f.getName().contains("Shared")) {
-                } // Shared is pointless to show
 
-                else if (f.getName().equals("")) {
-                } // Had some random empty named folders
+                if (usersNameFilter.filterSelection(f.getName())) {
 
-                else if (f.getName().equals("Applications")) {
-                } // Applications folder in the Users shouldn't be visible.
+                    if (counter == 0) {
+                        users += f.getName();
+                        counter++;
+                    } else
+                        users += "\n" + f.getName();
 
-                else if (counter == 0) {
-                    users += f.getName();
-                    counter++;
-                } else {
-                    users += "\n" + f.getName();
                 }
-            }
+            } // End for loop of files
+
+
         } catch (NullPointerException npe) {
             users = "No Users Detected";
         }
