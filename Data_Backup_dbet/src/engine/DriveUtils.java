@@ -272,14 +272,16 @@ public class DriveUtils {
 
                 // MAC FILTERING RULES GO HERE
 
-                // WATCH Mac made the folder 13021\ Kevin\ Tester in the actual folder
-                // replace spaces in the mkdir with "\ "
-                //mkdir = mkdir.replace(" ", "\\ ");
 
                 // BUG WORKAROUND Storage3 would lose its '/' after its name.
-                mkdir = mkdir.replace("//", "/");
+
 
                 mkdir = currentHighestStorageDrive.getMountPoint() + File.separator + mkdir + File.separator;
+
+                mkdir = mkdir.replace("//", "/");
+
+                // replace spaces in the mkdir with "\ "
+                //mkdir = mkdir.replace(" ", "\\ ");
 
 
 
@@ -354,8 +356,6 @@ public class DriveUtils {
             return true;
 
         else {
-//            double used = this.byteToGigabyte(driveToPossiblyBackup.getFile().getTotalSpace() - driveToPossiblyBackup.getFile().getUsableSpace());
-//            double highestFreeStorage = this.byteToGigabyte(driveToPossiblyBackup.getFile().getFreeSpace());
             double used = driveToPossiblyBackup.getCapacity("used");
             double highestFreeStorage = highestCapacityStorageDrive.getCapacity("free");
             double percentWeCanGetRoundedDown = round((highestFreeStorage / used) * 100, 2);

@@ -273,16 +273,15 @@ public class BackupEngine {
 
     public void showCopyStatistics(Drive justForStatsDrive) {
         StringBuilder stringBuilder = new StringBuilder();
-        postBackupFreeSpace = du.byteToGigabyte(justForStatsDrive.getFile().getFreeSpace());
+        postBackupFreeSpace = justForStatsDrive.getCapacity("free");
 
 
         stringBuilder.append("\n");
         stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
         stringBuilder.append("Data backed up to: " + destination + "\n");
         stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + (totalLineCounter - 1));
-        // the *100 / 100 should allow it to go to two points (two zero's) of precision so we don't have huge trailing floats
-        stringBuilder.append("\nPercent Error: " + (double) ((errorCounter / totalLineCounter) * 100 / 100) + "%");
-        stringBuilder.append("\nTotal Backup Size: " + Math.round(preBackupFreeSpace - postBackupFreeSpace) + "GB");
+        stringBuilder.append("\nPercent Error: " + DriveUtils.round((errorCounter / totalLineCounter), 2) + "%");
+        stringBuilder.append("\nTotal Backup Size: " + DriveUtils.round(preBackupFreeSpace - postBackupFreeSpace, 2) + "GB");
 
         // Do something with the string, like save it to a text file or something.
         System.out.println(stringBuilder.toString());
@@ -309,7 +308,10 @@ public class BackupEngine {
         // Get exact path to the destination folder, find the best storage option and use that.
         // This drive object will help us know about the total amount backed up,
         Drive currentHighestStorageDrive = du.getHighestStorageDrive(dde.getDriveList());
-        du.getSystemHasSufficientStorage(drive, currentHighestStorageDrive, parentWindow);
+
+        if (!du.getSystemHasSufficientStorage(drive, currentHighestStorageDrive, parentWindow))
+            return null; // They didn't want to continue, we can stop here and keep backing up.
+
         preBackupFreeSpace = currentHighestStorageDrive.getCapacity("free");
 
         // Create the destination folder
@@ -343,14 +345,21 @@ public class BackupEngine {
     }
 
 
-    public void windowsBackup(Drive drive) {
+    public String[] windowsBackup(Drive drive) {
 
 
         // Thanks Powershell..for not doing multiple files in one command
 
         // Ask the user what they want to name the folder, create it and return the mkdir complete command in string form
         String[] windows_filtering = new String[]{"Windows"};
-        String[] mkdir = du.askUserForMkdir(drive, parentWindow, du.getHighestStorageDrive(dde.getDriveList()), DEBUG, windows_filtering);
+        // Pull this drive out so we can see if we even have enough room first.
+        Drive highestStorage = du.getHighestStorageDrive(dde.getDriveList());
+
+
+        if (!du.getSystemHasSufficientStorage(drive, highestStorage, parentWindow))
+            return null; // They didn't want to continue, we can stop here and keep backing up other drives.
+
+        String[] mkdir = du.askUserForMkdir(drive, parentWindow, highestStorage, DEBUG, windows_filtering);
         destination = mkdir[1];
 
         // Get all the files/folders that we want in a full paths list for powershell
@@ -358,7 +367,8 @@ public class BackupEngine {
 
 
         // We've made the directory, now we need to do the backup.
-        for (String fileToBackup : fullPathFilesList) {
+        for (String fileToBackup : fullPathFilesList) { // Loops through ALL available files / folders for each command.
+
             // Create the command
             ArrayList<String> windowsCommand = new ArrayList<String>();
             windowsCommand.add("powershell.exe");
@@ -377,13 +387,13 @@ public class BackupEngine {
                     String s = finalWindowsCommand[i];
                     System.out.println(s);
                 }
-                break; // I only need to see a single file to test the command
-            } else
+            } else // Actually do something.
                 runCommand(finalWindowsCommand);
+
         }
 
+
         showCopyStatistics(drive);
-
-
+        return null; // return is pointless, except that it allows us to stop the method earlier.
     }
 } // END OF BACKUP ENGINE
