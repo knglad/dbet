@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -38,6 +39,8 @@ public class BackupEngine {
     private int errorCounter;
     private double preBackupFreeSpace;
     private double postBackupFreeSpace;
+    private LocalTime preBackupTime;
+
     // Show where the data ended up.
     private String destination;
 
@@ -207,19 +210,18 @@ public class BackupEngine {
 
 
             // TODO : Add time functionality before doing the actual backup and compare at end for total time to backup
-            // TODO : Precalculate the backup size and see if any of the backup drives can handle it.
-            // Possibly use some threading to calculate it as its working since this operation may take
-            // some time, Could return the amount in percentage that we can get with the most storage option available.
-
+            preBackupTime = LocalTime.now();
 
             totalLineCounter = 1;
             errorCounter = 0;
+
             // Determine which OS it is and call that backup method
             if (OS.contains("Mac")) {
                 macBackup(drive);
             } else if (OS.contains("Windows")) {
                 windowsBackup(drive);
             }
+
 
         }
     }
@@ -274,7 +276,9 @@ public class BackupEngine {
     public void showCopyStatistics(Drive justForStatsDrive) {
         StringBuilder stringBuilder = new StringBuilder();
         postBackupFreeSpace = justForStatsDrive.getCapacity("free");
-
+        LocalTime postBackupTime = LocalTime.now();
+        int totalBackupTime = postBackupTime.compareTo(preBackupTime);
+        System.out.println(totalBackupTime);
 
         stringBuilder.append("\n");
         stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");

@@ -23,23 +23,24 @@ public class DataDestinationEngine {
     private boolean listMadeSuccessfully = false;
 	private DriveUtils du = new DriveUtils();
 	/**
-	 * MANUAL HARD CODED DRIVE STRINGS ARE HERE! EDIT IF MOUNT POINTS OR NAMES CHANGE!!!!!!!! TODO WATCH Ensure this is updated
+	 * MANUAL HARD CODED DRIVE STRINGS ARE HERE! EDIT IF MOUNT POINTS OR NAMES CHANGE!!!!!!!!
 	 */
 
 			// NOTE: macVolumes must be the absolute path to EACH PARTITIONS ROOT!! Breaks otherwise and doesn't know what to do.
 	private String[] macVolumes = {"/Volumes/Storage/", "/Volumes/Storage 2 (500)/", "/Volumes/Storage3/"};
-	private String[] windowsVolumes = {"F:/CustBackup/"};
+	private String[] windowsVolumes = {"F:\\CustBackup\\"};
 
 
 	public DataDestinationEngine() {
 		// Determine which OS we are working with
 
 
-		if (du.getOS().equals("Mac OS X")) {
-		listMadeSuccessfully =  makeDriveList(macVolumes);
-		} else if (du.getOS().contains("Windows")) {
-		 listMadeSuccessfully = makeDriveList(windowsVolumes);
-	 }
+		if (du.getOS().equals("Mac OS X"))
+			listMadeSuccessfully = makeDriveList(macVolumes);
+
+		else if (du.getOS().contains("Windows"))
+			listMadeSuccessfully = makeDriveList(windowsVolumes);
+
 
 
     }
