@@ -55,19 +55,16 @@ public class DataDestinationEngine {
 	public boolean makeDriveList(String[] mountPoint){
 		
 		for (String s : mountPoint){// Advanced for loop, for each String I'm calling s WITHIN mountPoint array, do the following.
-			
-			File f = new File(s); // Make a file out of the string mount point
+
+			File f = new File(s); // Make a file out of the string, mountPoint
 
 			if (f.getTotalSpace() != 0.0) // pointless if it doesn't exist.
 				// add this newly created file to the list, the next available position.
 				rawDrives.add(du.mountPointToDrive(f));
 
 		}
-		
-		if (rawDrives.size() == 0 || rawDrives.size() < mountPoint.length)
-			return false; // its empty, it can never be empty
-		else 
-			return true; // there's something in it, that's all this cares about. 
+
+		return !rawDrives.isEmpty();
 	}
 
 

@@ -51,6 +51,7 @@ public class BackupEngine {
     public BackupEngine(JFrame window, boolean... debugMode) { // THIS IS THE BIG KAHUNA! The whole algo is this constructor.
         parentWindow = window;
 
+        // set debug if given, allows debug behavior post jar creation
         if (debugMode.length != 0)
             DEBUG = debugMode[0];
 
@@ -227,14 +228,14 @@ public class BackupEngine {
     }
 
 
-
-
-
-
+    // TODO : Make the output occur faster, or reduce lag.
+    // Currently it takes a few moments (more than what it should take by feeling) then it works normally.
+    // Possibly will be fixed when we aren't running so much to run the command. Check this with rsync.
 
     public void runCommand(String[] command) {
 
         ProcessBuilder processBuilder = new ProcessBuilder(command);
+
         // Redirect the error stream to also the inputStream so we see all output text from the command
         processBuilder.redirectErrorStream(true);
 
@@ -243,23 +244,23 @@ public class BackupEngine {
             process = processBuilder.start();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-            String line; // Something to hold the current string so it can be saved and checked
+
 
             // Statistics to help determine if the backup worked or not.
             CommandErrorFilter commandFilter = new CommandErrorFilter();
+            String line;
 
             while ((line = bufferedReader.readLine()) != null) {
-                // outputs the text to the console, DONT OUTPUT STRINGBUILDER AS THAT CAUSES REPEAT OUTPUT
                 System.out.println(line);
                 totalLineCounter++;
 
-                if (!commandFilter.filterSelection(line))
+                if (!commandFilter.filterSelection(line)) {
                     errorCounter++;
+                }
             }
 
 
             process.waitFor();
-            bufferedReader.close();
 
 
         } catch (IOException e) {
@@ -273,16 +274,22 @@ public class BackupEngine {
 
     }
 
+
+    // TODO : Ensure backup space is saved and showed properly, currently it shows 0.0GB
     public void showCopyStatistics(Drive justForStatsDrive) {
         StringBuilder stringBuilder = new StringBuilder();
         postBackupFreeSpace = justForStatsDrive.getCapacity("free");
+
         LocalTime postBackupTime = LocalTime.now();
         int totalBackupTime = postBackupTime.compareTo(preBackupTime);
-        System.out.println(totalBackupTime);
+        int hoursItTook = totalBackupTime / 60;
+        int minutesRemaining = totalBackupTime % 60;
+        LocalTime total = LocalTime.of(hoursItTook, minutesRemaining);
 
         stringBuilder.append("\n");
         stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
         stringBuilder.append("Data backed up to: " + destination + "\n");
+        stringBuilder.append("Total time elapsed: " + total.toString() + "\n");
         stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + (totalLineCounter - 1));
         stringBuilder.append("\nPercent Error: " + DriveUtils.round((errorCounter / totalLineCounter), 2) + "%");
         stringBuilder.append("\nTotal Backup Size: " + DriveUtils.round(preBackupFreeSpace - postBackupFreeSpace, 2) + "GB");
@@ -338,6 +345,7 @@ public class BackupEngine {
             }
         } else {
             // Now actually back it up.
+            System.out.println("Running Mac generated backup command");
             runCommand(finalCommand);
         }
 

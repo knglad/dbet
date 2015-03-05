@@ -38,7 +38,7 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
 
     public boolean addWithoutDuplicates(String keyword) {
         if (this.contains(keyword)) {
-            System.out.println("Failed to add " + keyword + " entry already in DisregardDrives!");
+            System.out.println("Failed to add \'" + keyword + "\' as entry is already in DisregardDrives!");
             return false;
         } else {
             this.add(keyword);
@@ -122,7 +122,7 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
      * this method uses a default hard coded array to create a new one.
      */
     public void createDefaultList(){
-        System.out.println("Creating default list for DisregardDrives \n\n");
+        System.out.println("Creating default list for DisregardDrives");
 
         for(String s : disregardKeywords){
             this.addWithoutDuplicates(s);

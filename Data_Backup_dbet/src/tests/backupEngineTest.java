@@ -34,7 +34,10 @@ public class backupEngineTest {
              * When prompted by the JOptionPane have it add the keyword to the list and close the program.
              * Rerun the program and see if it is detected (should load the list automatically).
              */
-        // Mac Folder Creation (askUserForMkdir in du) should name folders properly
+        // Mac Folder Creation (askUserForMkdir in du) should name folders properly NEEDS STRESS TESTING
+            /*
+             * Had a random issue where cp would fail yet the mkdir would go through
+             */
     }
 
 
