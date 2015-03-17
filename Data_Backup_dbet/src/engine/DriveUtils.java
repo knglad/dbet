@@ -217,8 +217,8 @@ public class DriveUtils {
     }
 
     /**
-     * Does the logic for the string to be used for the mkdir command. This method is OS sensitive and has explicit
-     * filtering for either Windows or Mac (because of syntatical differences). This does NOT run the command when debug
+     * Creates a JOptionPane to ask the user what they want to call the folder for all the data to be transferred to.
+     * This method is OS sensitive and has explicit filtering for either Windows or Mac (because of syntatical differences). This does NOT run the command when debug
      * is set to true.
      *
      * @param drive                      -- Drive we are backing up (to show the users for the operator)
@@ -309,8 +309,8 @@ public class DriveUtils {
 
                 mkdir_char_to_string[0] = '\'';
 
-                for (int i = 0; i < mkdir_as_chars.length; i++) {
-                    mkdir_char_to_string[i + 1] = mkdir_as_chars[i];
+                for (int i = 1; i < mkdir_as_chars.length - 1; i++) {
+                    mkdir_char_to_string[i] = mkdir_as_chars[i];
                 }
 
                 mkdir_char_to_string[mkdir_char_to_string.length - 1] = '\'';

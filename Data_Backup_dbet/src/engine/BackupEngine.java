@@ -309,8 +309,10 @@ public class BackupEngine {
         ArrayList<String> backupCommand = new ArrayList<String>();
 
         // Initial command and its flags in UNIX style command line
-        backupCommand.add("cp");
-        backupCommand.add("-Rv");
+        backupCommand.add("rsync");
+        backupCommand.add("-a");
+        backupCommand.add("-v");
+        backupCommand.add("--progress");
 
         // Add to the list all the files (filtered) and their full paths to the command
         backupCommand.addAll(du.getFullPathForFiles(drive));
@@ -345,7 +347,7 @@ public class BackupEngine {
             }
         } else {
             // Now actually back it up.
-            System.out.println("Running Mac generated backup command");
+            System.out.println("Running Mac Backup");
             runCommand(finalCommand);
         }
 
