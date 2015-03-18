@@ -21,7 +21,7 @@ public class CommandErrorFilter extends MasterFilter {
     @Override
     public boolean specialRules(String data) {
         if (data.contains("usage:")) {
-            System.out.println("\"cp\" command failed to start, improper syntax is likely.");
+            System.out.println("\"rsync\" command failed to start, improper syntax is likely.");
             return false;
         }
 
