@@ -108,7 +108,7 @@ public class Drive {
         else if (type.equals("used"))
             return DriveUtils.round(usedCapacity, 2) + "GB";
         else
-			return "Improper type in setDataDestination for Drive Object";
-	}
+            return "Improper argument 'type of capacity' for Drive object";
+    }
 	
 } // End class DRIVE

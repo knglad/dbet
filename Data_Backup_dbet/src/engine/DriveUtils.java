@@ -78,10 +78,13 @@ public class DriveUtils {
             }
         }
 
+        /** Special Rules here, Storage actually saves things to /customer_backup/ , and not its root folder. **/
         if (highest.getName().equals("Storage")) { // BUG WORKAROUND: Sun bug where getRuntime().exec() can't handle "\\ "
             // Had to rename folder without spaces, works fine otherwise.
             highest.mountPoint = highest.getMountPoint() + "/customer_backup/";
         }
+
+
         return highest;
     }
 
@@ -228,7 +231,7 @@ public class DriveUtils {
      * @return A String[] containing the command issued to the system. [1] is the un-filtered destination where
      * [2] is the filtered selection.
      */
-    public String[] askUserForMkdir(Drive drive, JFrame parentWindow, Drive currentHighestStorageDrive, boolean debug, String[]... mode) {
+    public String[] askUserForMkdir(Drive drive, JFrame parentWindow, Drive currentHighestStorageDrive, boolean debug, String... mode) {
 
         String[] commandToGiveToUser = new String[2];
         commandToGiveToUser[0] = "mkdir";
@@ -266,7 +269,7 @@ public class DriveUtils {
 
         // FILTER MKDIR HERE!
         if (mode.length != 0) {
-            String[] mode_os = mode[0];
+            String[] mode_os = mode;
 
             if (mode_os[0].contains("Mac")) {
 

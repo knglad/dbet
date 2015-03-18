@@ -209,9 +209,6 @@ public class BackupEngine {
 
 
         for (Drive drive : backupThisList) {
-
-
-            // TODO : Add time functionality before doing the actual backup and compare at end for total time to backup
             preBackupTime = LocalTime.now();
 
             totalLineCounter = 1;
@@ -228,10 +225,6 @@ public class BackupEngine {
         }
     }
 
-
-    // TODO : Make the output occur faster, or reduce lag.
-    // Currently it takes a few moments (more than what it should take by feeling) then it works normally.
-    // Possibly will be fixed when we aren't running so much to run the command. Check this with rsync.
 
     public void runCommand(String[] command) {
 
@@ -287,7 +280,7 @@ public class BackupEngine {
         long minutes = ChronoUnit.MINUTES.between(preBackupTime, postBackupTime);
         long hoursItTook = minutes / 60;
         long minutesRemaining = minutes % 60;
-        String time = hoursItTook + ":" + minutesRemaining;
+        String time = hoursItTook + "h - " + minutesRemaining + "m";
 
         // Create the actual text to show the user
         stringBuilder.append("\n");
@@ -332,7 +325,7 @@ public class BackupEngine {
         preBackupFreeSpace = currentHighestStorageDrive.getCapacity("free");
 
         // Create the destination folder
-        String[] mac_filtering = new String[]{"Mac"};
+        String mac_filtering = "Mac";
 
         // mkdir[1] is the actual destination
         String[] mkdir = du.askUserForMkdir(drive, parentWindow, currentHighestStorageDrive, DEBUG, mac_filtering);
@@ -369,7 +362,7 @@ public class BackupEngine {
         // Thanks Powershell..for not doing multiple files in one command
 
         // Ask the user what they want to name the folder, create it and return the mkdir complete command in string form
-        String[] windows_filtering = new String[]{"Windows"};
+        String windows_filtering = "Windows";
         // Pull this drive out so we can see if we even have enough room first.
         Drive highestStorage = du.getHighestStorageDrive(dde.getDriveList());
 
