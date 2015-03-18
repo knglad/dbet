@@ -148,7 +148,9 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
                 return false;
             }
         }
-        if (similar_name_dont_backup == false) {
+         // Special rules, its not in the list BUT we have some specific needs beyond the dd list
+
+        if (similar_name_dont_backup == false) { // We want Macintosh HD's to be backed up, just not ours, that'd be silly.
             if (name.contains("macintosh hd")) { // EVERYTHING MUST BE LOWERCASE!!!!
                 similar_name_dont_backup = true;
                 return false;
@@ -158,7 +160,7 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
         return true;
     }
 
-    // LATER Debug mode to go through list of drives we've disregarded, give the option to possibly remove from that list (human error)
+    // TODO :: LATER Debug mode to go through list of drives we've disregarded, give the option to possibly remove from that list (human error)
 
 } // END OF DISREGARD LISTS
 

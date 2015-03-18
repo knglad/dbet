@@ -23,7 +23,7 @@ public class fileMountTest {
     }
 
     // Test the primaryEngines rawDrives variable to see what happens if a drive we EXPECT
-    // to be there isn't
+    // to be there, isn't
     @Test
     public void testRawDrivesWhenNotPresent() {
         DataDestinationEngine pe = new DataDestinationEngine();

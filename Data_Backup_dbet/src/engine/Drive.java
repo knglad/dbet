@@ -100,14 +100,14 @@ public class Drive {
 		dataDestination = s;
 	}
 
-	public String printCapacity(String type) {
-		if (type.equals("total"))
-			return totalCapacity + "GB";
-		else if (type.equals("free"))
-			return freeCapacity + "GB";
-		else if (type.equals("used"))
-			return usedCapacity + "GB";
-		else
+    public String printCapacity(String type, DriveUtils du) {
+        if (type.equals("total"))
+            return DriveUtils.round(totalCapacity, 2) + "GB";
+        else if (type.equals("free"))
+            return DriveUtils.round(freeCapacity, 2) + "GB";
+        else if (type.equals("used"))
+            return DriveUtils.round(usedCapacity, 2) + "GB";
+        else
 			return "Improper type in setDataDestination for Drive Object";
 	}
 	
