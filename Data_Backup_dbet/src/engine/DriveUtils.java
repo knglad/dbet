@@ -304,23 +304,24 @@ public class DriveUtils {
                     custBackup = custBackup + "CustBackup\\";
                 }
 
+
                 // Windows usees strings in powershell for spaces
-                char[] mkdir_as_chars = mkdir.toCharArray();
+                char[] mkdir_as_chars = (custBackup + mkdir + File.separator).toCharArray();
 
                 // Make new array that allows me to add a ' before and after the folder location.
                 char[] mkdir_char_to_string = new char[mkdir_as_chars.length + 2];
 
                 mkdir_char_to_string[0] = '\'';
 
-                for (int i = 1; i < mkdir_as_chars.length - 1; i++) {
-                    mkdir_char_to_string[i] = mkdir_as_chars[i];
+                for (int i = 0; i < mkdir_as_chars.length; i++) {
+                    mkdir_char_to_string[i + 1] = mkdir_as_chars[i];
                 }
 
                 mkdir_char_to_string[mkdir_char_to_string.length - 1] = '\'';
 
                 String charArrayToString = new String(mkdir_char_to_string);
 
-                mkdir = custBackup + charArrayToString + File.separator;
+                mkdir = charArrayToString;
 
 
             }
