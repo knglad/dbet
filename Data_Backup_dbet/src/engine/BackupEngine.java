@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -275,24 +276,27 @@ public class BackupEngine {
     }
 
 
-    // TODO : Ensure backup space is saved and showed properly, currently it shows 0.0GB
     public void showCopyStatistics(Drive justForStatsDrive) {
         StringBuilder stringBuilder = new StringBuilder();
-        postBackupFreeSpace = justForStatsDrive.getCapacity("free");
+        // Need to check the backup with a new drive, the previous one is static and wont change dynamically.
+        Drive updatePostBackupDrive = du.updateDriveInformation(justForStatsDrive);
+        postBackupFreeSpace = updatePostBackupDrive.getCapacity("free");
 
+        // Find the time difference
         LocalTime postBackupTime = LocalTime.now();
-        int totalBackupTime = postBackupTime.compareTo(preBackupTime);
-        int hoursItTook = totalBackupTime / 60;
-        int minutesRemaining = totalBackupTime % 60;
-        LocalTime total = LocalTime.of(hoursItTook, minutesRemaining);
+        long minutes = ChronoUnit.MINUTES.between(preBackupTime, postBackupTime);
+        long hoursItTook = minutes / 60;
+        long minutesRemaining = minutes % 60;
+        String time = hoursItTook + ":" + minutesRemaining;
 
+        // Create the actual text to show the user
         stringBuilder.append("\n");
         stringBuilder.append("COPY-ITEM STATISTICS =================================================== \n");
         stringBuilder.append("Data backed up to: " + destination + "\n");
-        stringBuilder.append("Total time elapsed: " + total.toString() + "\n");
+        stringBuilder.append("Total time elapsed: " + time + "\n");
         stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + (totalLineCounter - 1));
         stringBuilder.append("\nPercent Error: " + DriveUtils.round((errorCounter / totalLineCounter), 2) + "%");
-        stringBuilder.append("\nTotal Backup Size: " + DriveUtils.round(preBackupFreeSpace - postBackupFreeSpace, 2) + "GB");
+        stringBuilder.append("\nTotal Backup Size: " + DriveUtils.round(preBackupFreeSpace - postBackupFreeSpace, 4) + "GB");
 
         // Do something with the string, like save it to a text file or something.
         System.out.println(stringBuilder.toString());

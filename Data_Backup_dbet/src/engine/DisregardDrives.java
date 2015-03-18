@@ -12,6 +12,7 @@ import java.util.ArrayList;
  */
 public class DisregardDrives extends ArrayList<String> implements Serializable {
 
+
     public String fileName = "disregardList"; // The file to be read and loaded
     public DisregardDrives dd;
     private boolean similar_name_dont_backup = false;
@@ -23,7 +24,6 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
             "Storage",
             "Adobe",
             "KeePass",
-            ".DS",
             ".DS",
             "Data Drive",
             "(C:)",

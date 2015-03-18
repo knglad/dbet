@@ -89,7 +89,14 @@ public class Drive {
 				return false;
 	}
 
-	public void setDataDestination(String s) {
+
+    /**
+     * Allows certain drives to have any type of folder structure within the root to store data,
+     * i.e Storage/cust_backup/ instead of just Storage/
+     *
+     * @param s -- The string representing the folder starting passed the root.
+     */
+    public void setDataDestination(String s) {
 		dataDestination = s;
 	}
 

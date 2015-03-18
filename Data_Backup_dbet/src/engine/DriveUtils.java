@@ -339,6 +339,7 @@ public class DriveUtils {
                 System.out.println(s);
         }
 
+
         return commandToGiveToUser;
     }
 
@@ -370,4 +371,12 @@ public class DriveUtils {
             return response;
         }
     }
-}
+
+
+    public Drive updateDriveInformation(Drive drive) {
+        File f = drive.getFile();
+        Drive d = this.mountPointToDrive(f);
+        return d;
+    }
+
+}// END DRIVE UTILS

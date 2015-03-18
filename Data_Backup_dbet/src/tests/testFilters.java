@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by kevin on 1/15/15.
  */
-public class testFilterChildren {
+public class testFilters {
 
     @Test
     public void testFilterListIsCreated() {

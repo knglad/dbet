@@ -34,10 +34,16 @@ public class backupEngineTest {
              * When prompted by the JOptionPane have it add the keyword to the list and close the program.
              * Rerun the program and see if it is detected (should load the list automatically).
              */
-        // Mac Folder Creation (askUserForMkdir in du) should name folders properly NEEDS STRESS TESTING
+        // Mac Folder Creation (askUserForMkdir in du) should name folders properly NEEDS STRESS TESTING [PASSED]
             /*
-             * Had a random issue where cp would fail yet the mkdir would go through
+             * For some reason you don't need the '\\ ' for syntax it just handles it properly for mkdir.
+             *      Otherwise it would\ make\ the\ folders\ like\ this.
              */
+        // Tested Rsync w and w/o --progress [PASSED]
+            /*
+             * Will be using rsync from now on, it is much more robust and faster at transferring everything.
+             */
+
     }
 
 
@@ -79,7 +85,7 @@ public class backupEngineTest {
 
         // Used to have a stringbuilder hold the output string. Found out it outputted the entirety of itself
         // everytime, meaning that we could have a thousand lines outputted and then it would output 1001 lines the next
-        // time it was called, reducing overall memory.
+        // time it was called, reducing overall memory immensely. Will save only important information for the log file.
         StringBuilder sb = new StringBuilder();
         String line = "This is a single line that we will use";
         String two = "THIS IS A SECONDARY LINE THAT WE WILL USE";
