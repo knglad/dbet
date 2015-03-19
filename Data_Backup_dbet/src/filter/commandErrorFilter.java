@@ -2,7 +2,7 @@ package filter;
 
 /**
  * Created by kevin on 2/13/15.
- * <p/>
+ * <p>
  * Filter that returns true if an error pattern is recognized and should help reduce the amount of redudant code
  * in runCommand in backupEngine.
  */

@@ -252,6 +252,7 @@ public class BackupEngine {
 
                 if (!commandFilter.filterSelection(line)) {
                     errorCounter++;
+                    // TODO :: Send error line to LOG.
                 }
             }
 
