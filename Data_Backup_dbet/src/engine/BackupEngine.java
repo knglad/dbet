@@ -31,19 +31,21 @@ public class BackupEngine {
     public JFrame parentWindow;
     public boolean shouldSaveDisregardDrives = false;
     public StringBuilder log;
+    // Statistical variables
+    public int errorCounter;
+    public long hoursItTook;
+    public long minutesRemaining;
+    public float percentError;
+    public double totalBackupSize;
+    // Show where the data ended up.
+    public String destination;
     private boolean DEBUG = false;
     private DriveUtils du;
     private DataDestinationEngine dde;
-
-    // Statistical variables
     private int totalLineCounter;
-    private int errorCounter;
     private double preBackupFreeSpace;
     private double postBackupFreeSpace;
     private LocalTime preBackupTime;
-
-    // Show where the data ended up.
-    private String destination;
 
     /**
      * @param window - Allows sending of signals to the window and its graphical components
@@ -274,12 +276,14 @@ public class BackupEngine {
         // Need to check the backup with a new drive, the previous one is static and wont change dynamically.
         Drive updatePostBackupDrive = du.updateDriveInformation(justForStatsDrive);
         postBackupFreeSpace = updatePostBackupDrive.getCapacity("free");
+        totalBackupSize = DriveUtils.round(preBackupFreeSpace - postBackupFreeSpace, 4);
+        percentError = DriveUtils.round((errorCounter / totalLineCounter), 2);
 
         // Find the time difference
         LocalTime postBackupTime = LocalTime.now();
         long minutes = ChronoUnit.MINUTES.between(preBackupTime, postBackupTime);
-        long hoursItTook = minutes / 60;
-        long minutesRemaining = minutes % 60;
+        hoursItTook = minutes / 60;
+        minutesRemaining = minutes % 60;
         String time = hoursItTook + "h - " + minutesRemaining + "m";
 
         // Create the actual text to show the user
@@ -288,8 +292,8 @@ public class BackupEngine {
         stringBuilder.append("Data backed up to: " + destination + "\n");
         stringBuilder.append("Total time elapsed: " + time + "\n");
         stringBuilder.append("Total Errors: " + errorCounter + "\nTotal Files Transferred: " + (totalLineCounter - 1));
-        stringBuilder.append("\nPercent Error: " + DriveUtils.round((errorCounter / totalLineCounter), 2) + "%");
-        stringBuilder.append("\nTotal Backup Size: " + DriveUtils.round(preBackupFreeSpace - postBackupFreeSpace, 4) + "GB");
+        stringBuilder.append("\nPercent Error: " + percentError + "%");
+        stringBuilder.append("\nTotal Backup Size: " + totalBackupSize + "GB");
 
         // Do something with the string, like save it to a text file or something.
         System.out.println(stringBuilder.toString());
@@ -407,4 +411,6 @@ public class BackupEngine {
         showCopyStatistics(drive);
         return null; // return is pointless, except that it allows us to stop the method earlier.
     }
+
+
 } // END OF BACKUP ENGINE

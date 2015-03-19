@@ -24,7 +24,7 @@ public class backupEngineTest {
     public void testDrivesForBackup() {
         JFrame jFrame = new JFrame();
 
-        BackupEngine backupEngine = new BackupEngine(jFrame);
+        BackupEngine backupEngine = new BackupEngine(jFrame, true);
 
         // Mac tested for proper filtering of unwanted drives. PASSED
         // Windows tested for proper filtering of unwanted drives. PASSED
@@ -115,7 +115,6 @@ public class backupEngineTest {
 
 
         du.askUserForMkdir(list.get(0), j, list.get(0), true, OS);
-
 
     }
 }
