@@ -18,4 +18,9 @@ public class testFilters {
         assertEquals("private", bdff.get(5));
         assertEquals("net", bdff.get(7));
     }
+
+    @Test
+    public void testListBehavior() {
+
+    }
 }
