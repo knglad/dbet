@@ -1,9 +1,10 @@
 package tests;
 
 import filter.BackupFileFilter;
+import filter.CommandErrorFilter;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Created by kevin on 1/15/15.
@@ -21,6 +22,10 @@ public class testFilters {
 
     @Test
     public void testListBehavior() {
+        CommandErrorFilter cef = new CommandErrorFilter();
 
+        // FALSE as in, it FAILED the filter test. and DONT use it.
+        assertFalse(cef.filterSelection("error"));
+        assertTrue(cef.filterSelection("/test/path/awesomeness.jpg"));
     }
 }

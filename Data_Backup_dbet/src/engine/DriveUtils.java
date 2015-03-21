@@ -295,7 +295,6 @@ public class DriveUtils {
 
                 mkdir = mkdir.replace("\\\\", "\\");
 
-                // TODO :: Test that we only need quotes if there is a space. AND ADD IF STATEMENT TO FIX THIS
 
                 String custBackup = currentHighestStorageDrive.getMountPoint();
 

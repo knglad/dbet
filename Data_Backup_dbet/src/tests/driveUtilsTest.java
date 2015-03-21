@@ -26,4 +26,11 @@ public class driveUtilsTest {
         assertTrue(du.getSystemHasSufficientStorage(list.get(0), list.get(1), j));
 
     }
+
+    @Test
+    public void testDivisorForByteToGigabyte() {
+        DriveUtils du = new DriveUtils();
+
+
+    }
 }
