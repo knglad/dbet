@@ -28,7 +28,8 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
             "Data Drive",
             "(C:)",
             "CSC Backup",
-            "System Image"};
+            "System Image",
+            "CSC"};
 
 
 

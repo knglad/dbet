@@ -30,7 +30,6 @@ public class BackupEngine {
     public DisregardDrives dd;
     public JFrame parentWindow;
     public boolean shouldSaveDisregardDrives = false;
-    public StringBuilder log;
     // Statistical variables
     public int errorCounter;
     public long hoursItTook;
@@ -39,6 +38,7 @@ public class BackupEngine {
     public double totalBackupSize;
     // Show where the data ended up.
     public String destination;
+    public Log log;
     private boolean DEBUG = false;
     private DriveUtils du;
     private DataDestinationEngine dde;
@@ -212,6 +212,9 @@ public class BackupEngine {
 
         for (Drive drive : backupThisList) {
             preBackupTime = LocalTime.now();
+            // Create log file early so as to save start time
+            log = new Log();
+            log.setStartTime(preBackupTime);
 
             totalLineCounter = 1;
             errorCounter = 0;
@@ -296,7 +299,9 @@ public class BackupEngine {
         stringBuilder.append("\nPercent Error: " + percentError + "%");
         stringBuilder.append("\nTotal Backup Size: " + totalBackupSize + "GB");
 
-        // Do something with the string, like save it to a text file or something.
+        // Log the events of this backup
+        log.setFileName(du.getBackupFolderName());
+        log.createLog(this);
         System.out.println(stringBuilder.toString());
 
     }
@@ -377,6 +382,7 @@ public class BackupEngine {
 
         String[] mkdir = du.askUserForMkdir(drive, parentWindow, highestStorage, DEBUG, windows_filtering);
         destination = mkdir[1];
+
 
         // Get all the files/folders that we want in a full paths list for powershell
         ArrayList<String> fullPathFilesList = du.getFullPathForFiles(drive);

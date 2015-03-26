@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class DriveUtils {
 
     public String OS;
+    public String backupFolderName;
 
     public DriveUtils() {
         OS = System.getProperty("os.name");
@@ -228,15 +229,16 @@ public class DriveUtils {
      * @param parentWindow               -- Used for the JOptionPane to actually have the popup exist
      * @param currentHighestStorageDrive -- Used for the destination of the mkdir command
      * @param mode                       -- Allows string filtering for proper syntax based on OS, "Mac" or "Windows" are accepted
-     * @return A String[] containing the command issued to the system. [1] is the un-filtered destination where
-     * [2] is the filtered selection.
+     * @return A String[] containing the command issued to the system. [0] is "mkdir" [1] is the formatted destination path string
      */
     public String[] askUserForMkdir(Drive drive, JFrame parentWindow, Drive currentHighestStorageDrive, boolean debug, String... mode) {
 
         String[] commandToGiveToUser = new String[2];
         commandToGiveToUser[0] = "mkdir";
+        String topLine = "Enter the customers Service Invoice Number( i.e 13021) for drive: "
+                + drive.getName() + "\n\n";
 
-        String mkdir = JOptionPane.showInputDialog(parentWindow, "Enter the customers Service Invoice Number( i.e 13021)\n\n" +
+        String mkdir = JOptionPane.showInputDialog(parentWindow, topLine +
                         "Potential users:\n" + this.getUsers(drive),
                 "Make Directory", JOptionPane.QUESTION_MESSAGE);
 
@@ -263,7 +265,8 @@ public class DriveUtils {
 
         } // End of mkdir == null (the first time)
 
-
+        // This is JUST the name the user gave us, this is used for the LOG object
+        backupFolderName = mkdir;
 
 
 
@@ -331,12 +334,14 @@ public class DriveUtils {
 
 
         if (!debug) {
+
             try {
                 Process p = Runtime.getRuntime().exec(commandToGiveToUser);
             } catch (IOException ioe) {
                 ioe.printStackTrace();
                 System.out.println("Could not reach destination folder to create directory.");
             }
+
         } else {
             for (String s : commandToGiveToUser)
                 System.out.println(s);
@@ -382,4 +387,8 @@ public class DriveUtils {
         return d;
     }
 
+
+    public String getBackupFolderName() {
+        return backupFolderName;
+    }
 }// END DRIVE UTILS

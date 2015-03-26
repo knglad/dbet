@@ -24,7 +24,7 @@ public class backupEngineTest {
     public void testDrivesForBackup() {
         JFrame jFrame = new JFrame();
 
-        BackupEngine backupEngine = new BackupEngine(jFrame, true);
+        BackupEngine backupEngine = new BackupEngine(jFrame);
 
         // Mac tested for proper filtering of unwanted drives. PASSED
         // Windows tested for proper filtering of unwanted drives. PASSED
@@ -43,6 +43,8 @@ public class backupEngineTest {
             /*
              * Will be using rsync from now on, it is much more robust and faster at transferring everything.
              */
+        // CSC from LaCie 2Big NAS mounts once connected and can be accessed like a regular drive on MAC [PASSED]
+        // CSC-NAS Windows needs to be tested that it is accessible from [IN TESTING]
 
     }
 

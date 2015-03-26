@@ -1,6 +1,9 @@
 package engine;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -80,7 +83,7 @@ public class Log {
     public boolean saveObjectToDestination() {
 
         try {
-            FileOutputStream fos = new FileOutputStream(dataDestination + File.separator + fileName);
+            FileOutputStream fos = new FileOutputStream(dataDestination);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(this);
             oos.close();
