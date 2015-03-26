@@ -67,6 +67,24 @@ public class BackupEngine {
         // Drives we KNOW we don't want to backup, as users use the program it will learn what it shouldn't look for.
         dd = new DisregardDrives();
 
+    }
+
+    /**
+     * startEngine allows the program to decide when to start the backup process. This allows modularity incase we
+     * want to create objects early and do some pre-processing or other tasks and then start the heavy lifting
+     * (backing up) when ready. The algorithm is as follows;
+     * Attempt to load dd (list of drives we use to backup), if not creates a default
+     * Using that list we find the actual drives we want to backup
+     * Ask the user which drives they want using a JOptionPane, which then asks what they want to name the destination
+     * folder.
+     * Backup the data (OS sensitive) that looks for files within each drive that aren't OS required or user generated
+     * then creates a string[] that is a command to send to the system. From there we store statistical variables and
+     * once done saves them to both a text file and the Java object in the destinations root folder.
+     */
+
+    public void startEngine() {
+
+
         // Load in the list of drives to ignore, if it's not found it uses the default.
         dd.loadList();
 
@@ -255,7 +273,7 @@ public class BackupEngine {
 
                 if (!commandFilter.filterSelection(line)) {
                     errorCounter++;
-                    // TODO :: Send error line to LOG.
+                    log.addToErrorFiles(line);
                 }
             }
 
@@ -302,11 +320,14 @@ public class BackupEngine {
         // Log the events of this backup
         log.setFileName(du.getBackupFolderName());
         log.createLog(this);
-        System.out.println(stringBuilder.toString());
+        log.setTextLog(stringBuilder);
+        log.saveObjectToDestination();
+        log.saveTextLog();
+
+        if (DEBUG)
+            System.out.println(stringBuilder.toString());
 
     }
-
-
 
 
     /**

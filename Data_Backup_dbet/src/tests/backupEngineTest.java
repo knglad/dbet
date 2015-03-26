@@ -26,6 +26,8 @@ public class backupEngineTest {
 
         BackupEngine backupEngine = new BackupEngine(jFrame);
 
+        backupEngine.startEngine();
+
         // Mac tested for proper filtering of unwanted drives. PASSED
         // Windows tested for proper filtering of unwanted drives. PASSED
         // Tested for dynamic list saving, procedure -- PASSED using LM PNP on multiple tries.

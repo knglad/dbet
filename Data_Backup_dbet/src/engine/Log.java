@@ -1,9 +1,6 @@
 package engine;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -13,7 +10,7 @@ import java.time.LocalTime;
  * <p/>
  * Created by kevin on 3/18/15.
  */
-public class Log {
+public class Log implements Serializable {
 
     public String fileName; // The current file we are / will be working with
     public StringBuilder logText; // The text of the log itself, this is for the text file
@@ -83,7 +80,7 @@ public class Log {
     public boolean saveObjectToDestination() {
 
         try {
-            FileOutputStream fos = new FileOutputStream(dataDestination);
+            FileOutputStream fos = new FileOutputStream(dataDestination + File.separator + "log.ser");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(this);
             oos.close();
@@ -97,6 +94,33 @@ public class Log {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public void setTextLog(StringBuilder sb) {
+        logText = sb;
+    }
+
+    public boolean saveTextLog() {
+
+        try {
+            PrintWriter pw = new PrintWriter(dataDestination + File.separator + "log.txt");
+            pw.print(logText.toString());
+            pw.println("Date Started: " + startOfBackupDate);
+            pw.println("Time Started: " + startTime);
+
+            if (errorFiles.length() != 0) {
+                pw.println("======== ERROR'D FILES, THESE WERE NOT BACKED UP ========");
+                pw.println(errorFiles.toString());
+            }
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("File not found in saveTextLog");
+            return false;
+        }
+
+
+        return true;
     }
 
 }
