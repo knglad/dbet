@@ -104,7 +104,7 @@ public class Log implements Serializable {
 
         try {
             PrintWriter pw = new PrintWriter(dataDestination + File.separator + "log.txt");
-            pw.print(logText.toString());
+            pw.println(logText.toString());
             pw.println("Date Started: " + startOfBackupDate);
             pw.println("Time Started: " + startTime);
 
