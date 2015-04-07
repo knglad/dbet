@@ -27,8 +27,8 @@ public class DataDestinationEngine {
 	 */
 
 			// NOTE: macVolumes must be the absolute path to EACH PARTITIONS ROOT!! Breaks otherwise and doesn't know what to do.
-	private String[] macVolumes = {"/Volumes/Storage/", "/Volumes/Storage 2 (500)/", "/Volumes/Storage3/"};
-	private String[] windowsVolumes = {"F:\\CustBackup\\"};
+    private String[] macVolumes = {"/Volumes/Storage and Backups/", "/Volumes/Storage (500)/"};
+    private String[] windowsVolumes = {"F:\\CustBackup\\"};
 
 
 	public DataDestinationEngine() {
@@ -58,11 +58,23 @@ public class DataDestinationEngine {
 
 			File f = new File(s); // Make a file out of the string, mountPoint
 
-			if (f.getTotalSpace() != 0.0) // pointless if it doesn't exist.
-				// add this newly created file to the list, the next available position.
-				rawDrives.add(du.mountPointToDrive(f));
+            if (f.getTotalSpace() != 0.0) { // pointless if it doesn't exist.
+                // add this newly created file to the list, the next available position.
+                Drive d = du.mountPointToDrive(f);
 
-		}
+                /**
+                 * SPECIAL DATA DESTINATION RULES HERE TODO :: Remember This
+                 *
+                 * I.E.
+                 * if (d.getName().contains("Storage (500)")
+                 *      d.setDataDestination("Cool/Path/To/Customer/Folders");
+                 */
+                if (d.getName().contains("F:"))
+                    d.setDataDestination("CustBackup");
+
+                rawDrives.add(d);
+            }
+        }
 
 		return !rawDrives.isEmpty();
 	}

@@ -19,9 +19,9 @@ public class Drive {
 	public double freeCapacity;
 	public double usedCapacity;
 	public File file;
-	public String dataDestination;
-	
-	// This is just a way for us to work with the drive and not keep the resource tied up so it can be unmounted etc. 
+    public String dataDestination = null;
+
+    // This is just a way for us to work with the drive and not keep the resource tied up so it can be unmounted etc.
 	public Drive(String namee, String mount_point, double total_capac, double free_capac, double used_capac, String fs, File f) {
 
 		name = namee;
@@ -89,17 +89,6 @@ public class Drive {
 				return false;
 	}
 
-
-    /**
-     * Allows certain drives to have any type of folder structure within the root to store data,
-     * i.e Storage/cust_backup/ instead of just Storage/
-     *
-     * @param s -- The string representing the folder starting passed the root.
-     */
-    public void setDataDestination(String s) {
-		dataDestination = s;
-	}
-
     public String printCapacity(String type, DriveUtils du) {
         if (type.equals("total"))
             return DriveUtils.round(totalCapacity, 2) + "GB";
@@ -110,5 +99,29 @@ public class Drive {
         else
             return "Improper argument 'type of capacity' for Drive object";
     }
-	
+
+    /**
+     * Should there be a specific folder you want to save customer data to this will give you
+     * the full path to the folder.
+     *
+     * @return the path to the customers data beyond the mount point
+     */
+    public String getDataDestination() {
+        if (dataDestination == null)
+            return this.getMountPoint() + File.separator;
+        else
+            return this.getMountPoint() + File.separator + dataDestination + File.separator;
+    }
+
+    /**
+     * Allows certain drives to have any type of folder structure within the root to store data,
+     * i.e Storage/cust_backup/ instead of just Storage/
+     *
+     * @param s -- The string representing the folder starting passed the root.
+     */
+    public void setDataDestination(String s) {
+        // getDataDestination puts the file.separators in for you
+        dataDestination = s;
+    }
+
 } // End class DRIVE

@@ -18,7 +18,6 @@ import java.util.ArrayList;
 public class DriveUtils {
 
     public String OS;
-    public String backupFolderName;
 
     public DriveUtils() {
         OS = System.getProperty("os.name");
@@ -67,15 +66,15 @@ public class DriveUtils {
     }
 
     /**
-     * @param rawDrives - ArrayList<Drive> that is all the current drives as they were PRIOR to backing up.
+     * @param storageDrives - ArrayList<Drive> that is all the current drives as they were PRIOR to backing up.
      * @return the Drive object with the highest freeCapacity
      */
-    public Drive getHighestStorageDrive(ArrayList<Drive> rawDrives) {
-        Drive highest = rawDrives.get(0);
+    public Drive getHighestStorageDrive(ArrayList<Drive> storageDrives) {
+        Drive highest = storageDrives.get(0);
 
-        for (int i = 1; i < rawDrives.size(); i++) { // i = 1 because highest starts out as the first drive.
-            if (rawDrives.get(i).getCapacity("free") > highest.getCapacity("free")) {
-                highest = rawDrives.get(i);
+        for (int i = 1; i < storageDrives.size(); i++) { // i = 1 because highest starts out as the first drive.
+            if (storageDrives.get(i).getCapacity("free") > highest.getCapacity("free")) {
+                highest = storageDrives.get(i);
             }
         }
 
@@ -265,9 +264,6 @@ public class DriveUtils {
 
         } // End of mkdir == null (the first time)
 
-        // This is JUST the name the user gave us, this is used for the LOG object
-        backupFolderName = mkdir;
-
 
 
         // FILTER MKDIR HERE!
@@ -278,11 +274,7 @@ public class DriveUtils {
 
                 // MAC FILTERING RULES GO HERE
 
-
-                // BUG WORKAROUND Storage3 would lose its '/' after its name.
-
-
-                mkdir = currentHighestStorageDrive.getMountPoint() + File.separator + mkdir + File.separator;
+                mkdir = currentHighestStorageDrive.getDataDestination() + File.separator + mkdir + File.separator;
 
                 mkdir = mkdir.replace("//", "/");
 
@@ -387,8 +379,4 @@ public class DriveUtils {
         return d;
     }
 
-
-    public String getBackupFolderName() {
-        return backupFolderName;
-    }
 }// END DRIVE UTILS

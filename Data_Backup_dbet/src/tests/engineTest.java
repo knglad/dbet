@@ -2,6 +2,7 @@ package tests;
 
 import engine.DataDestinationEngine;
 import engine.DriveUtils;
+import engine.Log;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -40,4 +41,11 @@ public class engineTest {
             System.out.println(pe.getDriveList().get(0).getCapacity("total"));
 
         }
+
+    @Test
+    public void testLogLoadAll() {
+        Log l = new Log();
+        l.loadAllLogs();
+
+    }
 }

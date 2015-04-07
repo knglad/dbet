@@ -3,6 +3,7 @@ package engine;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 /**
  * This object controls all the data we want to store about a single backup. It will allow itself to be saved to both
@@ -15,18 +16,17 @@ public class Log implements Serializable {
     public String fileName; // The current file we are / will be working with
     public StringBuilder logText; // The text of the log itself, this is for the text file
     public String dataDestination; // where the data was sent to originally
-
     // Errors and size
     public StringBuilder errorFiles; // When a file errors, we save its path from the backup command into this.
     public int errors; // total number of errors that occurred in the backup
     public double totalBackupSize;
     public double percentError;
-
     // Time reporting
     public long hoursItTook;
     public long minutesRemaining;
     public LocalTime startTime;
     public LocalDate startOfBackupDate;
+    private BackupEngine backupEngine;
 
 
 
@@ -54,6 +54,8 @@ public class Log implements Serializable {
      * @return boolean, true if completed successfully and false if something went wrong.
      */
     public void createLog(BackupEngine backupEngine) {
+        this.backupEngine = backupEngine;
+
         dataDestination = backupEngine.destination;
         errors = backupEngine.errorCounter;
         totalBackupSize = backupEngine.totalBackupSize;
@@ -66,10 +68,6 @@ public class Log implements Serializable {
 
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
     }
 
     public void addToErrorFiles(String errorFilePath) {
@@ -109,9 +107,10 @@ public class Log implements Serializable {
             pw.println("Time Started: " + startTime);
 
             if (errorFiles.length() != 0) {
-                pw.println("======== ERROR'D FILES, THESE WERE NOT BACKED UP ========");
+                pw.println("======== BACKUP ERROR FILES, THESE WERE NOT BACKED UP OR ARE DAMAGED ========");
                 pw.println(errorFiles.toString());
             }
+
             pw.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -121,6 +120,25 @@ public class Log implements Serializable {
 
 
         return true;
+    }
+
+    /**
+     * Looks through all the drives in DisregardDrives for a log.ser object and grabs it. Loads a copy of the
+     * DataDestinationEngine so it doesn't rely on anything to run. This allows us to check all logs without needing
+     * a backupEngine object.
+     *
+     * @return list of all logs found in all storage drives
+     */
+    public ArrayList<Log> loadAllLogs() {
+        DataDestinationEngine dde = new DataDestinationEngine();
+        ArrayList<Drive> listOfStorageDrives = dde.getDriveList();
+
+        for (Drive drive : listOfStorageDrives) {
+            // Attempt to load all the
+        }
+
+
+        return null;
     }
 
 }

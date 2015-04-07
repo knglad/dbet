@@ -8,6 +8,7 @@ import org.junit.Test;
 import javax.swing.*;
 import java.util.ArrayList;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -30,6 +31,11 @@ public class driveUtilsTest {
     @Test
     public void testDivisorForByteToGigabyte() {
         DriveUtils du = new DriveUtils();
+        DataDestinationEngine dde = new DataDestinationEngine();
+        ArrayList<Drive> list = dde.getDriveList();
+
+        // If we divide it properly it should come up with a near even number
+        assertEquals(list.get(0).getCapacity("free"), 1500.0);
 
 
     }

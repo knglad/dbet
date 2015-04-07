@@ -318,7 +318,6 @@ public class BackupEngine {
         stringBuilder.append("\nTotal Backup Size: " + totalBackupSize + "GB");
 
         // Log the events of this backup
-        log.setFileName(du.getBackupFolderName());
         log.createLog(this);
         log.setTextLog(stringBuilder);
         log.saveObjectToDestination();
