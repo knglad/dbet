@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  * Created by kevin on 1/12/15.
  *
- * Maintains the utilities to be used on Drive objects, where both engines use the same methods without code duplication.
+ * Maintains the utilities to be used on Drive objects, where all engines use the same methods without code duplication.
  */
 public class DriveUtils {
 
@@ -373,6 +373,14 @@ public class DriveUtils {
     }
 
 
+    /**
+     * the File object maintains the current status of a drive yet our Drive object is static
+     * (this is to avoid constant IO connection). This allows a quick update on the Drive variables
+     * and then closes the IO connection.
+     *
+     * @param drive
+     * @return the newly updated Drive object
+     */
     public Drive updateDriveInformation(Drive drive) {
         File f = drive.getFile();
         Drive d = this.mountPointToDrive(f);

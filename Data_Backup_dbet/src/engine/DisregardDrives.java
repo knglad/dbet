@@ -21,7 +21,6 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
     private String[] disregardKeywords = {"LM PNP",
             "WD SmartWare",
             "gimp",
-            "Storage",
             "Adobe",
             "KeePass",
             ".DS",
@@ -29,7 +28,11 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
             "(C:)",
             "CSC Backup",
             "System Image",
-            "CSC"};
+            "CSC",
+            "Storage\\ and\\ Backups",
+            "Storage (500)",
+            "Time Machine"
+    };
 
 
 
@@ -84,6 +87,7 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
      */
     public void loadList() {
 
+
         try {
             FileInputStream fis = new FileInputStream(fileName);
             ObjectInputStream ois = new ObjectInputStream(fis);
@@ -94,7 +98,7 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
 
         } catch (FileNotFoundException fnfe){
             // Can't find the file? Make a default!
-             this.createDefaultList();
+            this.createDefaultList();
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -104,7 +108,6 @@ public class DisregardDrives extends ArrayList<String> implements Serializable {
             c.printStackTrace();
 
         }
-
     }
 
     /**

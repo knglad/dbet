@@ -10,7 +10,7 @@ import java.io.File;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by kevin on 8/15/14.
+ * Created on : 8/15/14 for ${PACKAGE_NAME}
  */
 public class fileMountTest {
 

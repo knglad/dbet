@@ -11,7 +11,13 @@ import static org.junit.Assert.assertTrue;
 public class engineTest {
 	
         @Test
-	public void PrimaryEngineTest(){
+        public void DataDestinationEngineTest() {
+            /**
+             * THIS TEST IS DDE SENSITIVE AND WILL NOT PASS IF IT HAS BEEN CHANGED.
+             *  THIS TEST PASSED REPEATEDLY AND IS SIMPLISTIC SO RE-RUNNING IS NOT REQUIRED.
+             */
+
+
             DataDestinationEngine pe = new DataDestinationEngine();
             DriveUtils du = new DriveUtils();
 

@@ -273,7 +273,7 @@ public class BackupEngine {
 
                 if (!commandFilter.filterSelection(line)) {
                     errorCounter++;
-                    log.addToErrorFiles(line);
+                    log.addToErrorFiles(line + "\n"); // \n spaces each error so its more reader friendly.
                 }
             }
 
@@ -317,15 +317,17 @@ public class BackupEngine {
         stringBuilder.append("\nPercent Error: " + percentError + "%");
         stringBuilder.append("\nTotal Backup Size: " + totalBackupSize + "GB");
 
+
         // Log the events of this backup
         log.createLog(this);
         log.setTextLog(stringBuilder);
-        log.saveObjectToDestination();
-        log.saveTextLog();
 
-        if (DEBUG)
+        if (DEBUG) {
             System.out.println(stringBuilder.toString());
-
+        } else { // We want to save the log ONLY when something is transferred.
+            log.saveObjectToDestination();
+            log.saveTextLog();
+        }
     }
 
 
