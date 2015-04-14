@@ -130,15 +130,76 @@ public class Log implements Serializable {
      * @return list of all logs found in all storage drives
      */
     public ArrayList<Log> loadAllLogs() {
+        ArrayList<Log> allFoundLogs = new ArrayList<Log>();
         DataDestinationEngine dde = new DataDestinationEngine();
-        ArrayList<Drive> listOfStorageDrives = dde.getDriveList();
 
-        for (Drive drive : listOfStorageDrives) {
-            // Attempt to load all the
+        for (Drive drive : dde.getDriveList()) {
+            // Attempt to load all the logs from the various storage positions
+            String pathToData = drive.getDataDestination();
+
+            // TODO :: Will pathToData need a File.separator to work properly?
+            File[] foldersToCheckForLogs = new File(pathToData).listFiles();
+
+            // Now that we have the files for this drives path to the customers data, we need to check
+            // each one for a log object
+            for (File customerFolder : foldersToCheckForLogs) {
+                // Check this customers folder, this array is all the files / folders within.
+                File[] innerCustomerFolders = customerFolder.listFiles();
+
+
+                if (innerCustomerFolders != null) { // makes sure its a folder not a file
+
+
+                    // TODO :: See if the absolutepath needs a File.separator to load the log properly.
+                    for (File f : innerCustomerFolders) {
+                        if (f.getName().contains("log.ser")) { // This folder contains a lob object
+                            Log loadedLog = loadLog(f.getAbsolutePath() + File.separator + "log.ser");
+                            if (loadedLog != null) // double check to be sure we actually got it.
+                                allFoundLogs.add(loadedLog);
+                        }
+
+                    }
+
+                }
+            } // END OF CUSTOMERFOLDER LOOP
+
+
+            // After all that insanity we return what we got. Null if nothing was found.
+            return allFoundLogs;
         }
 
 
         return null;
+    }
+
+
+    public Log loadLog(String pathToLog) {
+
+        Log loadedLog = null;
+
+        try {
+            FileInputStream fis = new FileInputStream(pathToLog);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            loadedLog = (Log) ois.readObject();
+            ois.close();
+            fis.close();
+
+        } catch (FileNotFoundException fnfe) {
+            // Can't find the file? Make a default!
+            System.out.println("Path did not allow us to load a log!");
+            return null;
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            System.out.println("IOException on loadLog, could not reach the destination.");
+
+        } catch (ClassNotFoundException c) {
+            System.out.println("Class not found exception in loadLog(Path)");
+            c.printStackTrace();
+
+        }
+
+        return loadedLog;
     }
 
 }

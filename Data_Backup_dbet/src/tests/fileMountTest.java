@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import java.io.File;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * Created by kevin on 8/15/14.
  */
@@ -33,5 +35,16 @@ public class fileMountTest {
         for (Drive d : pe.getDriveList()) {
             System.out.println(d.getMountPoint() + "  " + d.printCapacity("free", du));
         }
+    }
+
+
+    @Test
+    public void testFileGetFilesWhenNotAFolder() {
+        File f = new File("/Users/Kevin/Desktop/Gladhart_HarassmentTraining.png");
+
+        // RETURNS NULL IF THERE ISNT A FILE LIST INSIDE.
+        File[] files = f.listFiles();
+        System.out.println(f.getName());
+        assertTrue(files == null);
     }
 }
