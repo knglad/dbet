@@ -24,7 +24,7 @@ public class backupEngineTest {
     public void testDrivesForBackup() {
         JFrame jFrame = new JFrame();
 
-        BackupEngine backupEngine = new BackupEngine(jFrame, true);
+        BackupEngine backupEngine = new BackupEngine(jFrame);
 
         backupEngine.startEngine();
 

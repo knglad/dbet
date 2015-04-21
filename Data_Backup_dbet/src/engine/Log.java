@@ -26,7 +26,6 @@ public class Log implements Serializable {
     public long minutesRemaining;
     public LocalTime startTime;
     public LocalDate startOfBackupDate;
-    private BackupEngine backupEngine;
 
 
 
@@ -54,8 +53,6 @@ public class Log implements Serializable {
      * @return boolean, true if completed successfully and false if something went wrong.
      */
     public void createLog(BackupEngine backupEngine) {
-        this.backupEngine = backupEngine;
-
         dataDestination = backupEngine.destination;
         errors = backupEngine.errorCounter;
         totalBackupSize = backupEngine.totalBackupSize;
@@ -134,6 +131,7 @@ public class Log implements Serializable {
         DataDestinationEngine dde = new DataDestinationEngine();
 
         for (Drive drive : dde.getDriveList()) {
+
             // Attempt to load all the logs from the various storage positions
             String pathToData = drive.getDataDestination();
 
@@ -143,6 +141,7 @@ public class Log implements Serializable {
             // Now that we have the files for this drives path to the customers data, we need to check
             // each one for a log object
             for (File customerFolder : foldersToCheckForLogs) {
+
                 // Check this customers folder, this array is all the files / folders within.
                 File[] innerCustomerFolders = customerFolder.listFiles();
 
@@ -152,8 +151,10 @@ public class Log implements Serializable {
 
                     // TODO :: See if the absolutepath needs a File.separator to load the log properly.
                     for (File f : innerCustomerFolders) {
+
                         if (f.getName().contains("log.ser")) { // This folder contains a lob object
                             Log loadedLog = loadLog(f.getAbsolutePath() + File.separator + "log.ser");
+
                             if (loadedLog != null) // double check to be sure we actually got it.
                                 allFoundLogs.add(loadedLog);
                         }

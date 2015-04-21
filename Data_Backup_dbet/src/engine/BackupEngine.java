@@ -49,6 +49,8 @@ public class BackupEngine {
 
     /**
      * @param window - Allows sending of signals to the window and its graphical components
+     * @param debugMode - if true will only show the text based output and not run any commands,
+     *                  this is debugging the command to ensure it is using the syntax properly.
      */
 
     public BackupEngine(JFrame window, boolean... debugMode) { // THIS IS THE BIG KAHUNA! The whole algo is this constructor.
@@ -58,7 +60,9 @@ public class BackupEngine {
         if (debugMode.length != 0)
             DEBUG = debugMode[0];
 
+        // Very useful tools
         du = new DriveUtils();
+        // Manages the storage drives that are separate from drives we want to backup
         dde = new DataDestinationEngine();
 
         // OS determines where to look for newly mounted drives we may want to backup
@@ -269,7 +273,8 @@ public class BackupEngine {
 
             while ((line = bufferedReader.readLine()) != null) {
                 System.out.println(line);
-                totalLineCounter++;
+                if (!line.contains("kB/s") || !line.contains("MB/s"))
+                    totalLineCounter++;
 
                 if (!commandFilter.filterSelection(line)) {
                     errorCounter++;
