@@ -104,7 +104,7 @@ public class Log implements Serializable {
             pw.println("Time Started: " + startTime);
 
             if (errorFiles.length() != 0) {
-                pw.println("======== BACKUP ERROR FILES, THESE WERE NOT BACKED UP OR ARE DAMAGED ========");
+                pw.println("\n\n======== BACKUP ERROR FILES, THESE WERE NOT BACKED UP OR ARE DAMAGED ========");
                 pw.println(errorFiles.toString());
             }
 
@@ -127,7 +127,10 @@ public class Log implements Serializable {
      * @return list of all logs found in all storage drives
      */
     public ArrayList<Log> loadAllLogs() {
+        // returned, new data structure
         ArrayList<Log> allFoundLogs = new ArrayList<Log>();
+
+        // Maintains the drives that we want to store data to.
         DataDestinationEngine dde = new DataDestinationEngine();
 
         for (Drive drive : dde.getDriveList()) {
@@ -135,7 +138,7 @@ public class Log implements Serializable {
             // Attempt to load all the logs from the various storage positions
             String pathToData = drive.getDataDestination();
 
-            // TODO :: Will pathToData need a File.separator to work properly?
+
             File[] foldersToCheckForLogs = new File(pathToData).listFiles();
 
             // Now that we have the files for this drives path to the customers data, we need to check
@@ -149,11 +152,10 @@ public class Log implements Serializable {
                 if (innerCustomerFolders != null) { // makes sure its a folder not a file
 
 
-                    // TODO :: See if the absolutepath needs a File.separator to load the log properly.
                     for (File f : innerCustomerFolders) {
 
                         if (f.getName().contains("log.ser")) { // This folder contains a lob object
-                            Log loadedLog = loadLog(f.getAbsolutePath() + File.separator + "log.ser");
+                            Log loadedLog = loadLog(f.getAbsolutePath());
 
                             if (loadedLog != null) // double check to be sure we actually got it.
                                 allFoundLogs.add(loadedLog);
@@ -188,11 +190,13 @@ public class Log implements Serializable {
         } catch (FileNotFoundException fnfe) {
             // Can't find the file? Make a default!
             System.out.println("Path did not allow us to load a log!");
+            System.out.println("Path given loadLog: " + pathToLog);
             return null;
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
             System.out.println("IOException on loadLog, could not reach the destination.");
+            System.out.println("Path given loadLog: " + pathToLog);
 
         } catch (ClassNotFoundException c) {
             System.out.println("Class not found exception in loadLog(Path)");

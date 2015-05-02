@@ -3,9 +3,11 @@ package tests;
 import engine.DataDestinationEngine;
 import engine.Drive;
 import engine.DriveUtils;
+import engine.Log;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertTrue;
 
@@ -46,5 +48,18 @@ public class fileMountTest {
         File[] files = f.listFiles();
         System.out.println(f.getName());
         assertTrue(files == null);
+    }
+
+
+    @Test
+    public void testLoadAllLogsWorks() {
+        Log l = new Log();
+        ArrayList<Log> allLogsOnSystem = l.loadAllLogs();
+
+        for (Log log : allLogsOnSystem) {
+            System.out.println(log.logText);
+        }
+
+
     }
 }
