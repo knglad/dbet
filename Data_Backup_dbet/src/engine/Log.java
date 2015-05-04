@@ -28,6 +28,11 @@ public class Log implements Serializable {
     public LocalDate startOfBackupDate;
 
 
+    /**
+     * SERIAL UID HERE!
+     */
+    final static long serialVersionUID = 1223334444;
+
 
     /**
      * sans-argument constructor so the class that is trying to get the log can
