@@ -28,6 +28,8 @@ public class BackupEngine {
 
     public String OS;
     public DisregardDrives dd;
+
+    // parentWindow contains the link to all the subcomponents of the JFrame like the LogWindow
     public JFrame parentWindow;
     public boolean shouldSaveDisregardDrives = false;
     // Statistical variables

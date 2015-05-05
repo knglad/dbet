@@ -1,21 +1,16 @@
 package gui;
 
 import javax.swing.*;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @author Kevin Gladhart
  *         <p/>
  *         This window will show text as files are backed up or as
- *         errors occur will show them, this also creates a log text file
- *         for each event and saves it in the users folder that is being backed up.
+ *         errors occur will show them. Several panels are held within that store
+ *         the current file we are working on, the progress of that file, the files remaining
+ *         and the last error the backup encountered
  */
-class LogWindow extends JPanel {
+public class LogWindow extends JPanel {
 
     // Dimensions in pixels
     public int height = 120;
@@ -26,53 +21,31 @@ class LogWindow extends JPanel {
     public int positionY = 0;
 
     // The data for this window
-    public String logText = "";
-    public String errors = ""; // This contains any files that may have failed to transfer
+
+    // Current file we are working on
+    public String currentFile = "";
+    // rsync has a progress line to show us how its going, this will be a single line updated every few seconds.
+    public String fileProgressLine = "";
+    // if an error is reported, show the text to the user
+    public String latestError = ""; // This contains any files that may have failed to transfer
 
 
     public LogWindow() {
+        // Make the overall window
+        makeOverallPanel();
+        // Make each internal text area that fits within the panel
 
-    }
-
-
-    /**
-     * @param str - The string to add to the window
-     *            Takes the login window and adds some text without deleting what was there prior,
-     *            adds a new line to each argument.
-     */
-    public void appendText(String str) {
-        logText += "\n" + str;
     }
 
     protected void clearText() {
-        logText = "";
+        currentFile = "";
+        fileProgressLine = "";
+        latestError = "";
     }
 
 
-    public String saveText() {
-        String fileName = "Backup ";
-
-        // Format for the date string
-        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss"); // TODO : Test this format works
-
-        // The actual date object
-        Date date = new Date();
-        fileName += dateFormat.format(date);
-
-
-        try {
-            FileOutputStream fos = new FileOutputStream(fileName);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(logText);
-            oos.close();
-            fos.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return logText;
+    public void makeOverallPanel() {
+        this.setSize(width, height);
+        this.setLocation(positionX, positionY);
     }
-
-
 }

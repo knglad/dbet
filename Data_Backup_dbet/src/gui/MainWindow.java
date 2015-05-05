@@ -8,11 +8,12 @@ public class MainWindow extends JFrame {
     public int height = 900;
 
     public boolean showMe = true;
+	public LogWindow logWindow;
 
-    public MainWindow(int x, int y){
-		width = x;
-		height = y;
+	public MainWindow(LogWindow lw) {
 		creation();
+		logWindow = lw;
+		this.add(logWindow);
 	}
 
 
@@ -24,7 +25,7 @@ public class MainWindow extends JFrame {
 		//Set height and width of the panel
 		this.setSize(width, height);
         this.setVisible(showMe);
-        this.setBackground(Color.black);
-    }
+		this.setBackground(Color.gray);
+	}
 
 }
